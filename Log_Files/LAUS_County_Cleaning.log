@@ -1,0 +1,211 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/LAUS_County_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:54:03
+
+. 
+. /***********************************************
+> FILE NAME: LAUS_County_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Clean and process LAUS county-level data for analysis.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: LAUS_County_Cleaning"
+FILE NAME: LAUS_County_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Clean and process LAUS county-level data for analysis."
+PURPOSE: Clean and process LAUS county-level data for analysis.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. // Define raw folder and input file
+. local raw_folder "$base_path/Raw_Data/LAUS_County_Data"
+
+. local file "Master_LAUS_Report.xlsx"
+
+. 
+. // ------------------------ Step 2: Import Data ---------------------
+. di "Processing: `file'"
+Processing: Master_LAUS_Report.xlsx
+
+. local filepath "`raw_folder'/`file'"
+
+. di "Full file path: `filepath'"
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/LAUS_County_Data/Master_LAUS_Report.xlsx
+
+. 
+. // Import Excel file starting from row 6 for variable names
+. import excel "`filepath'", cellrange(A6) firstrow clear
+(14 vars, 54,122 obs)
+
+. 
+. // ------------------------ Step 3: Drop Unnecessary Variables -------
+. drop A B C E L M N
+
+. 
+. // ------------------------ Step 4: Clean and Convert Variables ------
+. foreach var of varlist CivilianLaborForce Employed Unemployed UnemploymentRate {
+  2.     replace `var' = subinstr(`var', "(P)", "", .)   // Remove provisional flags
+  3.     replace `var' = subinstr(`var', "%", "", .)     // Remove %
+  4.     replace `var' = subinstr(`var', ",", "", .)     // Remove commas
+  5.     destring `var', replace force                   // Convert to numeric
+  6. }
+(120 real changes made)
+(0 real changes made)
+(53,820 real changes made)
+CivilianLaborForce: all characters numeric; replaced as long
+(2 missing values generated)
+(120 real changes made)
+(0 real changes made)
+(53,700 real changes made)
+Employed: all characters numeric; replaced as long
+(2 missing values generated)
+(120 real changes made)
+(0 real changes made)
+(13,120 real changes made)
+Unemployed: all characters numeric; replaced as long
+(2 missing values generated)
+(120 real changes made)
+(54,120 real changes made)
+(0 real changes made)
+UnemploymentRate: all characters numeric; replaced as double
+(2 missing values generated)
+
+. 
+. // ------------------------ Step 5: Filter Data ----------------------
+. drop if real(Year) < 2017
+(42,120 observations deleted)
+
+. 
+. // ------------------------ Step 6: Format Month Variable ------------
+. gen MonthFormatted = ""
+(12,002 missing values generated)
+
+. replace MonthFormatted = "01" if Month == "January"
+variable MonthFormatted was str1 now str2
+(960 real changes made)
+
+. replace MonthFormatted = "02" if Month == "February"
+(960 real changes made)
+
+. replace MonthFormatted = "03" if Month == "March"
+(960 real changes made)
+
+. replace MonthFormatted = "04" if Month == "April"
+(960 real changes made)
+
+. replace MonthFormatted = "05" if Month == "May"
+(960 real changes made)
+
+. replace MonthFormatted = "06" if Month == "June"
+(960 real changes made)
+
+. replace MonthFormatted = "07" if Month == "July"
+(960 real changes made)
+
+. replace MonthFormatted = "08" if Month == "August"
+(960 real changes made)
+
+. replace MonthFormatted = "09" if Month == "September"
+(960 real changes made)
+
+. replace MonthFormatted = "10" if Month == "October"
+(840 real changes made)
+
+. replace MonthFormatted = "11" if Month == "November"
+(840 real changes made)
+
+. replace MonthFormatted = "12" if Month == "December"
+(840 real changes made)
+
+. 
+. drop Month
+
+. rename MonthFormatted Month
+
+. 
+. // ------------------------ Step 7: Clean and Standardize COUNTY -----
+. rename Location COUNTY
+
+. replace COUNTY = subinstr(COUNTY, " County", "", .)
+(12,000 real changes made)
+
+. replace COUNTY = upper(trim(COUNTY))
+(12,001 real changes made)
+
+. replace COUNTY = proper(lower(COUNTY))
+(12,001 real changes made)
+
+. 
+. // ------------------------ Step 8: Final Adjustments ----------------
+. drop if trim(Month) == "" | missing(Month)
+(842 observations deleted)
+
+. 
+. sort COUNTY Year Month
+
+. order COUNTY Year Month CivilianLaborForce Employed Unemployed UnemploymentRate
+
+. 
+. destring Month, replace
+Month: all characters numeric; replaced as byte
+
+. destring Year, replace
+Year: all characters numeric; replaced as int
+
+. 
+. rename CivilianLaborForce Mnthly_Civilian_Labor_Force
+
+. label variable Mnthly_Civilian_Labor_Force "Monthly Civilian Labor Force"
+
+. 
+. rename Employed Mnthly_Employed
+
+. label variable Mnthly_Employed "Monthly Number of Employed Individuals"
+
+. 
+. rename Unemployed Mnthly_Unemployed
+
+. label variable Mnthly_Unemployed "Monthly Number of Unemployed Individuals"
+
+. 
+. rename UnemploymentRate Mnthly_Unemployment_Rate
+
+. label variable Mnthly_Unemployment_Rate "Monthly Unemployment Rate (percentage)"
+
+. 
+. // ------------------------ Step 9: Save Final Dataset ---------------
+. save "$base_path/Data_Outputs/LAUS_County_Data/Cleaned_LAUS_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/LAUS_County_Data/Cleaned_LAUS_Data.dta saved
+
+. di "LAUS county data successfully processed and saved."
+LAUS county data successfully processed and saved.
+
+. 
+. // Close the log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/LAUS_County_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:09
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

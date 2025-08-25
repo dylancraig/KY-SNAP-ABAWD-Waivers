@@ -1,0 +1,26 @@
+Demographic Variables Means		
+Variable	Waived Counties	Non Waived Counties
+Annual Weighted Avg. Percent Non-Hispanic White	.8821	.7973
+	(.0498)	(.0333)
+Annual Weighted Avg. Percent Non-Hispanic Black	.0532	.1109
+	(.0258)	(.0233)
+Annual Weighted Avg. Percent Hispanic or Latino	.0291	.044
+	(.0103)	(.0051)
+Annual Weighted Avg. Percent Non-Hispanic Asian	.0099	.0198
+	(.0051)	(.0038)
+Annual Weighted Avg. Percent Non-Hispanic AIAN	.0017	.0017
+	(.0006)	(.0001)
+Annual Weighted Avg. Percent Non-Hispanic NHOPI	.0005	.0007
+	(.0002)	(.0001)
+Annual Weighted Avg. Percent Non-Hispanic Other Race	.0014	.0018
+	(.0009)	(.0003)
+Annual Weighted Avg. Percent Non-Hispanic Two or More Races	.0199	.023
+	(.0065)	(.002)
+Annual Weighted Avg. Percent Rural Population	.5419	.2592
+	(.1463)	(.1073)
+Annual Weighted Avg. Percent with HS Diploma or Higher (25+)	.8338	.8844
+	(.0507)	(.0123)
+Annual Weighted Avg. Percent with Bachelor's Degree or Higher (25+)	.2065	.2845
+	(.0519)	(.0294)
+Observations	94	94
+Standard deviations in parentheses		

@@ -1,0 +1,31 @@
+Regression Estimates: Annual Food Insecurity Rate			
+	(1)	(2)	(3)
+VARIABLES	Model 1: Unemployment Rate Control	Model 2: Other Economic Controls	Model 3: Demographic Controls
+			
+WaiverStatus	-0.0026*	-0.0076***	-0.0037
+	(0.002)	(0.002)	(0.002)
+Mnthly_Unemployment_Rate	-0.2035***	-0.1842***	-0.1472***
+	(0.049)	(0.037)	(0.040)
+Quart_Wkly_Wage		-0.0000***	-0.0000***
+		(0.000)	(0.000)
+Ann_Perc_Below_Poverty		-0.0610*	-0.0479
+		(0.031)	(0.031)
+Ann_Perc_NH_White			0.0214
+			(0.031)
+Ann_Perc_NH_Black			0.0789
+			(0.105)
+Ann_Perc_Hispanic_Latino			-0.1929
+			(0.181)
+Ann_Perc_HS_25_Over			0.0551
+			(0.046)
+Ann_Perc_Bach_25_Over			-0.1093**
+			(0.046)
+Ann_RuralPopPerc			0.1561**
+			(0.079)
+Constant	0.1704***	0.2217***	0.0513
+	(0.003)	(0.010)	(0.071)
+			
+Observations	11,160	8,640	8,640
+R-squared	0.915	0.927	0.933
+Robust standard errors in parentheses			
+*** p<0.01, ** p<0.05, * p<0.1			

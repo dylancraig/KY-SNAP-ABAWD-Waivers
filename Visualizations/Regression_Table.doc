@@ -1,0 +1,40 @@
+{\rtf1\fs24
+\pard\qc
+Regression Estimates: Annual Food Insecurity Rate\par
+\trowd\trgaph75\trleft-75\intbl\trqc\clbrdrt\brdrs\cellx3600\clbrdrt\brdrs\cellx8640\clbrdrt\brdrs\cellx13392\clbrdrt\brdrs\cellx17712
+\ql \cell\qc (1)\cell\qc (2)\cell\qc (3)\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx3600\cellx8640\cellx13392\cellx17712
+\trowd\trgaph75\trleft-75\trqc\clbrdrb\brdrs\cellx3600\clbrdrb\brdrs\cellx8640\clbrdrb\brdrs\cellx13392\clbrdrb\brdrs\cellx17712
+\ql VARIABLES\cell\qc Model 1: Unemployment Rate Control\cell\qc Model 2: Other Economic Controls\cell\qc Model 3: Demographic Controls\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx3600\cellx8640\cellx13392\cellx17712
+\ql \cell\qc \cell\qc \cell\qc \cell\row
+\ql WaiverStatus\cell\qc -0.0026*\cell\qc -0.0076***\cell\qc -0.0037\cell\row
+\ql \cell\qc (0.002)\cell\qc (0.002)\cell\qc (0.002)\cell\row
+\ql Mnthly_Unemployment_Rate\cell\qc -0.2035***\cell\qc -0.1842***\cell\qc -0.1472***\cell\row
+\ql \cell\qc (0.049)\cell\qc (0.037)\cell\qc (0.040)\cell\row
+\ql Quart_Wkly_Wage\cell\qc \cell\qc -0.0000***\cell\qc -0.0000***\cell\row
+\ql \cell\qc \cell\qc (0.000)\cell\qc (0.000)\cell\row
+\ql Ann_Perc_Below_Poverty\cell\qc \cell\qc -0.0610*\cell\qc -0.0479\cell\row
+\ql \cell\qc \cell\qc (0.031)\cell\qc (0.031)\cell\row
+\ql Ann_Perc_NH_White\cell\qc \cell\qc \cell\qc 0.0214\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.031)\cell\row
+\ql Ann_Perc_NH_Black\cell\qc \cell\qc \cell\qc 0.0789\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.105)\cell\row
+\ql Ann_Perc_Hispanic_Latino\cell\qc \cell\qc \cell\qc -0.1929\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.181)\cell\row
+\ql Ann_Perc_HS_25_Over\cell\qc \cell\qc \cell\qc 0.0551\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.046)\cell\row
+\ql Ann_Perc_Bach_25_Over\cell\qc \cell\qc \cell\qc -0.1093**\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.046)\cell\row
+\ql Ann_RuralPopPerc\cell\qc \cell\qc \cell\qc 0.1561**\cell\row
+\ql \cell\qc \cell\qc \cell\qc (0.079)\cell\row
+\ql Constant\cell\qc 0.1704***\cell\qc 0.2217***\cell\qc 0.0513\cell\row
+\ql \cell\qc (0.003)\cell\qc (0.010)\cell\qc (0.071)\cell\row
+\ql \cell\qc \cell\qc \cell\qc \cell\row
+\ql Observations\cell\qc 11,160\cell\qc 8,640\cell\qc 8,640\cell\row
+\trowd\trgaph75\trleft-75\trqc\trbrdrb\brdrs\clbrdrb\brdrs\cellx3600\clbrdrb\brdrs\cellx8640\clbrdrb\brdrs\cellx13392\clbrdrb\brdrs\cellx17712
+\ql R-squared\cell\qc 0.915\cell\qc 0.927\cell\qc 0.933\cell\row
+\pard\qc
+Robust standard errors in parentheses\par
+*** p<0.01, ** p<0.05, * p<0.1\par
+}

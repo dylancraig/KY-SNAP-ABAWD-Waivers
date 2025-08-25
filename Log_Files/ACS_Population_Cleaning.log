@@ -1,0 +1,212 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/ACS_Population_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:53:55
+
+. 
+. /***********************************************
+> FILE NAME: ACS_Population_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and clean ACS county-level population data with a month variable.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: ACS_Population_Cleaning"
+FILE NAME: ACS_Population_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and clean ACS county-level population data with a month variable."
+PURPOSE: Process and clean ACS county-level population data with a month variable.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. local raw_folder "$base_path/Raw_Data/ACS_County_Characteristics_Data/ACS_Population"
+
+. local file_pattern "*.csv"
+
+. 
+. // ------------------------ Step 2: Initialize Master Dataset --------
+. clear
+
+. tempfile master
+
+. save `master', emptyok replace
+(dataset contains 0 observations)
+(file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp not found)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 3: Process Files -------------------
+. local files : dir "`raw_folder'" files "`file_pattern'"
+
+. 
+. foreach file of local files {
+  2.     di "Processing file: `file'"
+  3.     local filepath "`raw_folder'/`file'"
+  4.     di "Full file path: `filepath'"
+  5. 
+.     capture import delimited "`filepath'", varnames(2) stringcols(_all) clear
+  6.     if _rc {
+  7.         di "Error: Could not import `file'. Skipping."
+  8.         continue
+  9.     }
+ 10. 
+.     // Extract year from filename
+.     gen Year = real(regexs(1)) if regexm("`file'", "([0-9]{4})")
+ 11.     if missing(Year) {
+ 12.         di "Error: Could not extract year from `file'. Skipping."
+ 13.         continue
+ 14.     }
+ 15. 
+.     // Drop unnecessary rows
+.     drop if geographic == "" | missing(geographic)
+ 16. 
+.     append using `master'
+ 17.     save `master', replace
+ 18. }
+Processing file: acsdt5y2017.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2017.b01001-data.csv
+(0 observations deleted)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsdt5y2018.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2018.b01001-data.csv
+(0 observations deleted)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsdt5y2019.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2019.b01001-data.csv
+(0 observations deleted)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsdt5y2020.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2020.b01001-data.csv
+(0 observations deleted)
+(variable marginoferrortotalmale18and19yea was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemale18and19y was str3, now str5 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsdt5y2021.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2021.b01001-data.csv
+(0 observations deleted)
+(variable marginoferrortotalmale was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalmaleunder5year was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalmale18and19yea was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemale was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemaleunder5ye was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemale18and19y was str3, now str5 to accommodate using data's values)
+(variable estimatetotalfemale85yearsandove was str4, now str5 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsdt5y2022.b01001-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Population/acsdt5y2022.b01001-data.csv
+(0 observations deleted)
+(variable marginoferrortotalmale was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalmale18and19yea was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemale was str3, now str5 to accommodate using data's values)
+(variable marginoferrortotalfemale18and19y was str3, now str5 to accommodate using data's values)
+(variable estimatetotalfemale85yearsandove was str4, now str5 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 4: Add Month Variable & Clean --------
+. use `master', clear
+
+. 
+. // Expand to 12 months per year
+. gen Month = .
+(720 missing values generated)
+
+. expand 12
+(7,920 observations created)
+
+. bysort geographicareaname Year (Month): replace Month = _n
+(8,640 real changes made)
+
+. 
+. // Format Month as two digits
+. gen MonthFormatted = string(Month, "%02.0f")
+
+. drop Month
+
+. rename MonthFormatted Month
+
+. 
+. // Reorder and clean variables
+. order geographicareaname Year Month estimatetotal
+
+. rename geographicareaname COUNTY
+
+. rename estimatetotal Ann_Population
+
+. 
+. // Standardize COUNTY names
+. gen COUNTY_clean = upper(subinstr(COUNTY, " County, Kentucky", "", .))
+
+. drop COUNTY
+
+. rename COUNTY_clean COUNTY
+
+. 
+. // Keep only necessary vars
+. keep COUNTY Ann_Population Year Month
+
+. order COUNTY Year Month
+
+. 
+. // Convert to numeric
+. destring Month, replace
+Month: all characters numeric; replaced as byte
+
+. destring Year, replace
+Year already numeric; no replace
+
+. destring Ann_Population, replace
+Ann_Population: all characters numeric; replaced as long
+
+. 
+. replace COUNTY = proper(lower(COUNTY))
+(8,640 real changes made)
+
+. 
+. // Drop data for 2020 and later
+. drop if Year >= 2020
+(4,320 observations deleted)
+
+. 
+. // Label variables
+. label variable Ann_Population "Annual Population"
+
+. 
+. // ------------------------ Step 5: Save Final Dataset ---------------
+. di "Saving final dataset with Month variable..."
+Saving final dataset with Month variable...
+
+. save "$base_path/Data_Outputs/ACS_Population/ACS_Population_Cleaned.dta", replace
+(file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/ACS_Population/ACS_Population_Cleaned.dta not found)
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/ACS_Population/ACS_Population_Cleaned.dta saved
+
+. di "File successfully saved as ACS_Population_Cleaned.dta"
+File successfully saved as ACS_Population_Cleaned.dta
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/ACS_Population_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:53:55
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

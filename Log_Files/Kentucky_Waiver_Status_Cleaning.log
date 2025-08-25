@@ -1,0 +1,167 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Kentucky_Waiver_Status_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:54:02
+
+. 
+. /***********************************************
+> FILE NAME: Kentucky_Waiver_Status_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and compile Kentucky county waiver status data.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: Kentucky_Waiver_Status_Cleaning"
+FILE NAME: Kentucky_Waiver_Status_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and compile Kentucky county waiver status data."
+PURPOSE: Process and compile Kentucky county waiver status data.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. // Define folders and Excel files
+. local raw_folder "$base_path/Raw_Data/Kentucky_County_Waiver_Status_Data"
+
+. local files : dir "`raw_folder'" files "*.xlsx"
+
+. 
+. // Prepare master dataset
+. clear
+
+. tempfile master
+
+. save `master', emptyok replace
+(dataset contains 0 observations)
+(file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp not found)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 2: Process Each File ----------------
+. foreach file of local files {
+  2.     di "Processing file: `file'"
+  3. 
+.     local filepath "`raw_folder'/`file'"
+  4. 
+.     // Import Excel file
+.     capture import excel "`filepath'", firstrow clear
+  5.     if _rc {
+  6.         di "Error importing `file'. Skipping."
+  7.         continue
+  8.     }
+  9. 
+.     // Standardize COUNTY variable
+.     rename County COUNTY
+ 10.     replace COUNTY = upper(trim(COUNTY))
+ 11. 
+.     // Ensure Month is two-digit string
+.     gen MonthFormatted = string(Month, "%02.0f")
+ 12.     drop Month
+ 13.     rename MonthFormatted Month
+ 14. 
+.     // Reorder variables
+.     order COUNTY Year Month WaiverStatus
+ 15. 
+.     // Append into master
+.     append using `master'
+ 16.     save `master', replace
+ 17. }
+Processing file: kentucky waiver status 2017.xlsx
+(1,440 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2018.xlsx
+(1,440 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2019.xlsx
+(1,440 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2020.xlsx
+(1,440 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2021.xlsx
+(1,440 real changes made)
+(variable WaiverStatus was str6, now str10 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2022.xlsx
+(1,440 real changes made)
+(variable WaiverStatus was str6, now str10 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2023.xlsx
+(1,320 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: kentucky waiver status 2024.xlsx
+(1,440 real changes made)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 3: Clean and Standardize ------------
+. use `master', clear
+
+. 
+. destring Year, replace
+Year already numeric; no replace
+
+. destring Month, replace force
+Month: all characters numeric; replaced as byte
+
+. replace COUNTY = proper(lower(COUNTY))
+(11,400 real changes made)
+
+. 
+. // Map WaiverStatus to numeric
+. gen WaiverStatus_num = .
+(11,400 missing values generated)
+
+. replace WaiverStatus_num = 1 if WaiverStatus == "Waived"
+(8,547 real changes made)
+
+. replace WaiverStatus_num = 0 if WaiverStatus == "Not Waived"
+(2,853 real changes made)
+
+. 
+. label define WaiverStatus_lbl 1 "Waived" 0 "Not Waived"
+
+. label values WaiverStatus_num WaiverStatus_lbl
+
+. 
+. drop WaiverStatus
+
+. rename WaiverStatus_num WaiverStatus
+
+. 
+. label variable WaiverStatus "County waived from SNAP ABAWD work requirements (1 = Waived, 0 = Not Waived)"
+
+. 
+. // ------------------------ Step 4: Save Final Dataset ---------------
+. save "$base_path/Data_Outputs/Kentucky_Waiver_Status/Final_Waiver_Status.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Kentucky_Waiver_Status/Final_Waiver_Status.dta saved
+
+. di "Kentucky Waiver Status data successfully processed and saved."
+Kentucky Waiver Status data successfully processed and saved.
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Kentucky_Waiver_Status_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:03
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

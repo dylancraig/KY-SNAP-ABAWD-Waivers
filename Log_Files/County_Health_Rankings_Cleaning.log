@@ -1,0 +1,3429 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/County_Health_Rankings_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:53:56
+
+. 
+. /***********************************************
+> FILE NAME: County_Health_Rankings_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and clean County Health Rankings & Roadmaps data.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: County_Health_Rankings_Cleaning"
+FILE NAME: County_Health_Rankings_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and clean County Health Rankings & Roadmaps data."
+PURPOSE: Process and clean County Health Rankings & Roadmaps data.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. local raw_folder    "$base_path/Raw_Data/County_Health_Rankings_Roadmaps_Data"
+
+. local output_folder "$base_path/Data_Outputs/County_Health_Rankings_Roadmaps_Data"
+
+. local files : dir "`raw_folder'" files "*.xls*"
+
+. 
+. // ------------------------ Step 2: Process Excel Files -------------
+. tempfile master
+
+. clear
+
+. save `master', emptyok replace
+(dataset contains 0 observations)
+(file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp not found)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. foreach file of local files {
+  2.     di "Processing file: `file'"
+  3.     local filepath "`raw_folder'/`file'"
+  4. 
+.     // Extract year from filename
+.     local year = ""
+  5.     if regexm("`file'", "([0-9]{4})") {
+  6.         local year = regexs(1)
+  7.     }
+  8.     else {
+  9.         di "Skipping file `file' - year not found in filename."
+ 10.         continue
+ 11.     }
+ 12. 
+.     // Import sheet
+.     capture import excel "`filepath'", sheet("Additional Measure Data") cellrange(A2) firstrow clear
+ 13.     if _rc {
+ 14.         di "Error importing file: `file'. Skipping."
+ 15.         continue
+ 16.     }
+ 17. 
+.     // Add year column
+.     gen Year = "`year'"
+ 18. 
+.     // Force string consistency
+.     ds
+ 19.     foreach var of varlist `r(varlist)' {
+ 20.         tostring `var', replace force
+ 21.     }
+ 22. 
+.     // Append to master
+.     append using `master', force
+ 23.     save `master', replace
+ 24. }
+Processing file: 2017 county health rankings kentucky data - v2.xls
+FIPS          ChildMorta~e  Q             HIVCases      MotorVehic~s  AO            OtherPCPRate  Householdi~c  FirearmFat~e  AmericanIn~e  NonHispani~e  CK
+State         J             R             HIVPrevale~e  MVMortalit~e  AP            OtherPCPRa~o  FreeorRedu~h  BN            BV            CD            Year
+County        K             FrequentMe~s  FoodInsecure  AI            AQ            Disconnect~h  Segreg~index  BO            Asian         NotProfici~h
+Deaths        L             T             AB            AJ            AR            Household~me  Segreg~Index  Population    BX            CF
+AgeAdjuste~y  InfantMort~e  U             LimitedAcc~s  Insufficie~p  AS            BA            HomicideRate  BQ            NativeHawa~c  CG
+CILow         N             Diabetic      AD            AL            AT            BB            BJ            BR            BZ            CH
+CIHigh        O             W             DrugOverdo~s  AM            AU            House~ealone  BK            AfricanAme~n  Hispanic      Female
+H             FrequentPh~s  X             DrugOverdo~e  Uninsured     Costs         House~kalone  FirearmFat~s  BT            CB            Rural
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+Deaths was long now str5
+AgeAdjustedMortality was double now str5
+CILow was double now str5
+CIHigh was double now str5
+H was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+J was double now str4
+K was double now str5
+L was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+N was double now str3
+O was double now str4
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+Q was double now str11
+Q was forced to string; some loss of information
+R was double now str11
+R was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+T was double now str11
+T was forced to string; some loss of information
+U was double now str11
+U was forced to string; some loss of information
+Diabetic was double now str11
+W was double now str4
+X was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+AB was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+AD was double now str11
+AD was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MVMortalityRate was double now str11
+MVMortalityRate was forced to string; some loss of information
+AI was double now str4
+AJ was double now str4
+InsufficientSleep was double now str4
+AL was double now str4
+AM was double now str4
+Uninsured was long now str6
+AO was double now str11
+AO was forced to string; some loss of information
+AP was double now str11
+AP was forced to string; some loss of information
+AQ was double now str11
+AQ was forced to string; some loss of information
+AR was long now str5
+AS was double now str11
+AS was forced to string; some loss of information
+AT was double now str11
+AT was forced to string; some loss of information
+AU was double now str11
+AU was forced to string; some loss of information
+Costs was double now str8
+OtherPCPRate was double now str9
+OtherPCPRate was forced to string; some loss of information
+OtherPCPRatio already string; no replace
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+HouseholdIncome was long now str5
+BA was double now str11
+BA was forced to string; some loss of information
+BB was double now str11
+BB was forced to string; some loss of information
+HouseholdIncomewhitealone was long now str5
+HouseholdIncomeblackalone was long now str5
+HouseholdincomeHispanic was long now str6
+FreeorReducedLunch was double now str11
+FreeorReducedLunch was forced to string; some loss of information
+Segregationindex was double now str11
+Segregationindex was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+HomicideRate was double now str4
+BJ was double now str3
+BK was double now str4
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str4
+BN was double now str4
+BO was double now str4
+Population was long now str7
+BQ was double now str11
+BQ was forced to string; some loss of information
+BR was double now str11
+BR was forced to string; some loss of information
+AfricanAmerican was long now str6
+BT was double now str11
+BT was forced to string; some loss of information
+AmericanIndianAlaskanNative was int now str5
+BV was double now str11
+Asian was long now str5
+BX was double now str11
+BX was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+BZ was double now str11
+Hispanic was long now str6
+CB was double now str11
+CB was forced to string; some loss of information
+NonHispanicWhite was long now str7
+CD was double now str11
+CD was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+CF was double now str11
+CF was forced to string; some loss of information
+CG was double now str11
+CG was forced to string; some loss of information
+CH was double now str11
+CH was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+Rural was long now str7
+CK was double now str11
+CK was forced to string; some loss of information
+Year already string; no replace
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2018 county health rankings kentucky data - v3.xls
+FIPS          AgeAdjuste~e  InfantMo~ate  FrequentMe~s  AK            AT            BC            BL            BU            CD            NonHispani~e  CV
+State         K             T             AC            LimitedAcc~s  Insufficie~p  BD            Householdi~k  FirearmFat~s  AmericanIn~e  CN            Year
+County        ChildMor~ate  U             AD            AM            AV            BE            Householdi~c  FirearmFat~e  CF            NotProfici~h
+Deaths        M             InfantMort~k  Diabetic      DrugOverdo~s  AW            Costs         Householdi~e  BX            Asian         CP
+AgeAdjuste~y  N             InfantMort~c  AF            DrugOverdo~e  Uninsured     OtherPCPRate  FreeorRedu~h  BY            CH            CQ
+CILow         ChildMorta~k  InfantMo~ite  AG            RangeDrugO~a  AY            OtherPCPRa~o  Segreg~index  Population    NativeHawa~c  CR
+CIHigh        ChildMorta~c  FrequentPh~s  HIVCases      MotorVehic~s  AZ            Disconnect~h  Segreg~Index  CA            CJ            Female
+AgeAdjuste~k  ChildMor~ite  Z             HIVPrevale~e  MVMortalit~e  BA            HouseholdI~e  HomicideRate  CB            Hispanic      Rural
+AgeAdjuste~c  R             AA            FoodInsecure  AS            BB            BK            BT            AfricanAme~n  CL            CU
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+Deaths was long now str5
+AgeAdjustedMortality was double now str5
+CILow was double now str5
+CIHigh was double now str6
+AgeAdjustedMortalityBlack was double now str5
+AgeAdjustedMortalityHispanic was double now str5
+AgeAdjustedMortalityWhite was double now str5
+K was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+M was double now str4
+N was double now str5
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+ChildMortalityRateWhite was double now str11
+ChildMortalityRateWhite was forced to string; some loss of information
+R was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+T was double now str3
+U was double now str4
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+InfantMortalityRateWhite was double now str11
+InfantMortalityRateWhite was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+Z was double now str11
+Z was forced to string; some loss of information
+AA was double now str11
+AA was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+AC was double now str11
+AC was forced to string; some loss of information
+AD was double now str11
+AD was forced to string; some loss of information
+Diabetic was double now str4
+AF was double now str4
+AG was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+AK was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+AM was double now str11
+AM was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+RangeDrugOverdoseMortalityRa was double now str7
+MotorVehicleDeaths was int now str4
+MVMortalityRate was double now str11
+MVMortalityRate was forced to string; some loss of information
+AS was double now str4
+AT was double now str4
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+AV was double now str11
+AV was forced to string; some loss of information
+AW was double now str11
+AW was forced to string; some loss of information
+Uninsured was long now str6
+AY was double now str11
+AY was forced to string; some loss of information
+AZ was double now str11
+AZ was forced to string; some loss of information
+BA was double now str11
+BA was forced to string; some loss of information
+BB was long now str5
+BC was double now str11
+BC was forced to string; some loss of information
+BD was double now str11
+BD was forced to string; some loss of information
+BE was double now str11
+BE was forced to string; some loss of information
+Costs was double now str8
+OtherPCPRate was double now str9
+OtherPCPRate was forced to string; some loss of information
+OtherPCPRatio already string; no replace
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+HouseholdIncome was long now str5
+BK was double now str11
+BK was forced to string; some loss of information
+BL was double now str11
+BL was forced to string; some loss of information
+HouseholdincomeBlack was long now str5
+HouseholdincomeHispanic was long now str5
+HouseholdincomeWhite was long now str5
+FreeorReducedLunch was double now str11
+FreeorReducedLunch was forced to string; some loss of information
+Segregationindex was double now str11
+Segregationindex was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+BT was double now str3
+BU was double now str4
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+BX was double now str4
+BY was double now str4
+Population was long now str7
+CA was double now str11
+CA was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+AfricanAmerican was long now str6
+CD was double now str11
+CD was forced to string; some loss of information
+AmericanIndianAlaskanNative was int now str5
+CF was double now str11
+Asian was long now str5
+CH was double now str11
+CH was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+CJ was double now str11
+Hispanic was long now str6
+CL was double now str11
+CL was forced to string; some loss of information
+NonHispanicWhite was long now str7
+CN was double now str11
+CN was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+CP was double now str11
+CP was forced to string; some loss of information
+CQ was double now str11
+CQ was forced to string; some loss of information
+CR was double now str11
+CR was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+Rural was long now str7
+CU was double now str11
+CU was forced to string; some loss of information
+CV was byte now str1
+Year already string; no replace
+(variable K was str4, now str5 to accommodate using data's values)
+(variable R was str4, now str11 to accommodate using data's values)
+(variable T was str3, now str11 to accommodate using data's values)
+(variable U was str4, now str11 to accommodate using data's values)
+(variable Diabetic was str4, now str11 to accommodate using data's values)
+(variable AS was str4, now str11 to accommodate using data's values)
+(variable AT was str4, now str11 to accommodate using data's values)
+(variable BB was str5, now str11 to accommodate using data's values)
+(variable HouseholdincomeHispanic was str5, now str6 to accommodate using data's values)
+(variable BT was str3, now str11 to accommodate using data's values)
+(variable BX was str4, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2019 county health rankings kentucky data - v1_0.xls
+FIPS          AgeAdjuste~y  ChildMorta~k  FrequentPh~s  HIVPrevale~e  AY            BI            Householdi~e  CC            CM            Hispanic      DG
+State         L             ChildMorta~c  AF            FoodInsecure  Insufficie~p  BJ            FreeorRedu~h  Homeowners    CN            CX            Year
+County        M             ChildMor~ite  AG            AQ            BA            OtherPCPRate  Segreg~index  CE            AfricanAme~n  NonHispani~e
+LifeExpect~y  AgeAdjuste~k  X             FrequentMe~s  LimitedAcc~s  BB            OtherPCPRa~o  Segreg~Index  CF            CP            CZ
+CILow         AgeAdjuste~c  InfantMo~ate  AI            AS            Uninsured     Disconnect~h  HomicideRate  CG            AmericanIn~e  NotProfici~h
+CIHigh        AgeAdjuste~e  Z             AJ            DrugOverdo~s  BD            HouseholdI~e  BX            Households~u  CR            DB
+LifeExpect~k  Q             AA            Diabetic      DrugOverdo~e  BE            BO            BY            SevereHous~n  Asian         DC
+LifeExpect~c  ChildMor~ate  InfantMort~k  AL            MotorVehic~s  BF            BP            FirearmFat~s  CJ            CT            DD
+LifeExpect~e  S             InfantMort~c  AM            MVMortalit~e  BG            Householdi~k  FirearmFat~e  CK            NativeHawa~c  Female
+Deaths        T             InfantMo~ite  HIVCases      AX            BH            Householdi~c  CB            Population    CV            Rural
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyBlack was double now str11
+LifeExpectancyBlack was forced to string; some loss of information
+LifeExpectancyHispanic was double now str11
+LifeExpectancyHispanic was forced to string; some loss of information
+LifeExpectancyWhite was double now str11
+LifeExpectancyWhite was forced to string; some loss of information
+Deaths was long now str5
+AgeAdjustedMortality was double now str5
+L was double now str5
+M was double now str6
+AgeAdjustedMortalityBlack was double now str11
+AgeAdjustedMortalityBlack was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AgeAdjustedMortalityWhite was double now str11
+AgeAdjustedMortalityWhite was forced to string; some loss of information
+Q was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+S was double now str4
+T was double now str5
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+ChildMortalityRateWhite was double now str11
+ChildMortalityRateWhite was forced to string; some loss of information
+X was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+Z was double now str3
+AA was double now str4
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+InfantMortalityRateWhite was double now str11
+InfantMortalityRateWhite was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+AF was double now str11
+AF was forced to string; some loss of information
+AG was double now str11
+AG was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+AI was double now str11
+AI was forced to string; some loss of information
+AJ was double now str11
+AJ was forced to string; some loss of information
+Diabetic was double now str4
+AL was double now str4
+AM was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+AQ was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+AS was double now str11
+AS was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MVMortalityRate was double now str11
+MVMortalityRate was forced to string; some loss of information
+AX was double now str4
+AY was double now str4
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+BA was double now str11
+BA was forced to string; some loss of information
+BB was double now str11
+BB was forced to string; some loss of information
+Uninsured was long now str6
+BD was double now str11
+BD was forced to string; some loss of information
+BE was double now str11
+BE was forced to string; some loss of information
+BF was double now str11
+BF was forced to string; some loss of information
+BG was long now str5
+BH was double now str11
+BH was forced to string; some loss of information
+BI was double now str11
+BI was forced to string; some loss of information
+BJ was double now str11
+BJ was forced to string; some loss of information
+OtherPCPRate was double now str9
+OtherPCPRate was forced to string; some loss of information
+OtherPCPRatio already string; no replace
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+HouseholdIncome was long now str5
+BO was double now str11
+BO was forced to string; some loss of information
+BP was double now str11
+BP was forced to string; some loss of information
+HouseholdincomeBlack was long now str5
+HouseholdincomeHispanic was long now str6
+HouseholdincomeWhite was long now str5
+FreeorReducedLunch was double now str11
+FreeorReducedLunch was forced to string; some loss of information
+Segregationindex was double now str11
+Segregationindex was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+HomicideRate was double now str4
+BX was double now str3
+BY was double now str4
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str4
+CB was double now str4
+CC was double now str4
+Homeowners was long now str7
+CE was double now str11
+CE was forced to string; some loss of information
+CF was double now str11
+CF was forced to string; some loss of information
+CG was double now str11
+CG was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+SevereHousingCostBurden was double now str11
+SevereHousingCostBurden was forced to string; some loss of information
+CJ was double now str11
+CJ was forced to string; some loss of information
+CK was double now str11
+CK was forced to string; some loss of information
+Population was long now str7
+CM was double now str11
+CM was forced to string; some loss of information
+CN was double now str11
+CN was forced to string; some loss of information
+AfricanAmerican was long now str6
+CP was double now str11
+CP was forced to string; some loss of information
+AmericanIndianAlaskanNative was int now str5
+CR was double now str11
+Asian was long now str5
+CT was double now str11
+CT was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+CV was double now str11
+Hispanic was long now str6
+CX was double now str11
+CX was forced to string; some loss of information
+NonHispanicWhite was long now str7
+CZ was double now str11
+CZ was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+DB was double now str11
+DB was forced to string; some loss of information
+DC was double now str11
+DC was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+Rural was long now str7
+DG was double now str11
+DG was forced to string; some loss of information
+Year already string; no replace
+(variable T was str5, now str11 to accommodate using data's values)
+(variable Z was str3, now str11 to accommodate using data's values)
+(variable AA was str4, now str11 to accommodate using data's values)
+(variable Diabetic was str4, now str11 to accommodate using data's values)
+(variable AM was str4, now str11 to accommodate using data's values)
+(variable AY was str4, now str11 to accommodate using data's values)
+(variable OtherPCPRatio was str6, now str7 to accommodate using data's values)
+(variable HomicideRate was str4, now str11 to accommodate using data's values)
+(variable FirearmFatalitiesRate was str4, now str11 to accommodate using data's values)
+(variable BX was str3, now str11 to accommodate using data's values)
+(variable CB was str4, now str11 to accommodate using data's values)
+(variable Q was str4, now str11 to accommodate using data's values)
+(variable AQ was str4, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2020 county health rankings kentucky data - v1_0.xlsx
+FIPS          X             AU            InfantMort~k  LimitedAcc~d  DL            EI            Househ~N95CI  HomicideRa~n  SuicideRat~k  HW            AmericanIn~v
+State         Y             ChildMorta~n  InfantMo~k95  DrugOverd~hs  MVMortalit~N  EJ            FG            Homic~n95CIL  Suic~k95CILo  HX            IU
+County        AgeAdjuste~N  ChildMor~n95  BT            DrugOverdo~e  MVMort~N95CI  EK            HouseholdI~n  Homic~n95CIH  Suic~k95CIHi  FirearmF~ite  Asian
+LifeExpect~y  AgeAdjust~95  AX            InfantMort~c  CR            DO            EL            Househ~n95CI  HomicideRa~k  SuicideRat~c  HZ            IW
+CILow         AB            ChildMorta~k  BV            CS            MVMortalit~n  OtherPrima~e  FJ            Homic~k95CIL  SuicideRat~I  IA            NativeHawa~c
+CIHigh        AgeAdjuste~n  ChildMor~k95  BW            DrugOverdo~I  MVMort~n95CI  OtherPrima~i  HouseholdI~k  Homic~k95CIH  HE            NonPetitio~s  IY
+LifeExpect~N  AgeAdjust~n9  BA            InfantMo~ite  CU            DR            Disconnect~h  Househ~k95CI  HomicideRa~c  SuicideRat~e  Petitioned~s  Hispanic
+LifeEx~N95CI  AE            ChildMorta~c  InfantMo~e95  CV            MVMortalit~k  EP            FM            HomicideRa~I  Suic~e95CILo  Denominator   JA
+I             AgeAdjuste~k  BC            BZ            DrugOverd~As  MVMort~k95CI  EQ            HouseholdI~c  GK            Suic~e95CIHi  JuvenileAr~e  NonHispani~e
+LifeExpect~n  AgeAdjust~k9  BD            FrequentPh~s  CX            DU            AverageGr~ce  Household~95  Homicide~ite  FirearmFat~s  AverageTra~r  JC
+LifeEx~n95CI  AH            ChildMor~ite  CB            CY            MVMortalit~c  AverageGra~n  FP            Homic~e95CIL  FirearmF~ate  Homeowners    NotProfici~h
+L             AgeAdjuste~c  ChildMor~e95  CC            DrugOverdo~l  MVMortali~95  AverageGra~k  HouseholdI~e  Homic~e95CIH  HK            IH            JE
+LifeExpect~k  AJ            BG            FrequentMe~s  DA            DX            AverageGra~a  Househ~e95CI  GO            HL            II            JF
+LifeEx~k95CI  AK            BH            CE            DB            MVMortalit~e  AverageGr~te  FS            SuicideRat~d  FirearmFat~N  IJ            JG
+O             AgeAdjus~ite  InfantMo~ate  CF            DrugOverdo~i  MVMort~e95CI  EW            Enrolledin~u  GQ            FirearmFat~9  Households~u  Female
+LifeExpect~c  AgeAdjust~e9  BJ            Adultswith~s  DD            EA            EX            Segreg~index  GR            HO            SevereHous~n  Rural
+LifeExpe~95C  AN            BK            CH            DE            Insufficie~p  EY            Segreg~Index  CrudeRate     FirearmFat~n  IM            JJ
+R             AO            InfantMort~N  CI            DrugOverdo~h  EC            EZ            HomicideRate  SuicideRat~N  HQ            IN            Year
+LifeExpect~e  ChildMor~ate  InfantMo~N95  HIVCases      DG            ED            FA            FX            SuicideRat~w  HR            Population
+LifeEx~e95CI  AQ            BN            HIVPrevale~e  DH            Uninsured     MedianHous~e  FY            SuicideRat~g  FirearmFat~k  lessthan18~e
+U             AR            InfantMort~n  FoodInsecure  MotorVehic~s  EF            FC            HomicideRa~N  SuicideRat~n  HT            IQ
+Deaths        ChildMorta~N  InfantMo~n95  CM            MotorVehic~e  EG            FD            HomicideRa~o  Suic~n95CILo  HU            Black
+AgeAdjus~ate  ChildMor~N95  BQ            LimitedAcc~s  DK            EH            HouseholdI~N  HomicideRa~i  Suic~n95CIHi  FirearmFat~i  IS
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyAIAN was byte now str1
+LifeExpectancyAIAN95CI was byte now str1
+I was byte now str1
+LifeExpectancyAsian was double now str11
+LifeExpectancyAsian was forced to string; some loss of information
+LifeExpectancyAsian95CI was double now str11
+LifeExpectancyAsian95CI was forced to string; some loss of information
+L was double now str11
+L was forced to string; some loss of information
+LifeExpectancyBlack was double now str11
+LifeExpectancyBlack was forced to string; some loss of information
+LifeExpectancyBlack95CI was double now str11
+LifeExpectancyBlack95CI was forced to string; some loss of information
+O was double now str11
+O was forced to string; some loss of information
+LifeExpectancyHispanic was double now str11
+LifeExpectancyHispanic was forced to string; some loss of information
+LifeExpectancyHispanic95C was double now str11
+LifeExpectancyHispanic95C was forced to string; some loss of information
+R was double now str11
+R was forced to string; some loss of information
+LifeExpectancyWhite was double now str11
+LifeExpectancyWhite was forced to string; some loss of information
+LifeExpectancyWhite95CI was double now str11
+LifeExpectancyWhite95CI was forced to string; some loss of information
+U was double now str11
+U was forced to string; some loss of information
+Deaths was long now str5
+AgeAdjustedDeathRate was double now str11
+AgeAdjustedDeathRate was forced to string; some loss of information
+X was double now str11
+X was forced to string; some loss of information
+Y was double now str11
+Y was forced to string; some loss of information
+AgeAdjustedMortalityAIAN was byte now str1
+AgeAdjustedMortalityAIAN95 was byte now str1
+AB was byte now str1
+AgeAdjustedMortalityAsian was double now str11
+AgeAdjustedMortalityAsian was forced to string; some loss of information
+AgeAdjustedMortalityAsian9 was double now str11
+AgeAdjustedMortalityAsian9 was forced to string; some loss of information
+AE was double now str11
+AE was forced to string; some loss of information
+AgeAdjustedMortalityBlack was double now str11
+AgeAdjustedMortalityBlack was forced to string; some loss of information
+AgeAdjustedMortalityBlack9 was double now str11
+AgeAdjustedMortalityBlack9 was forced to string; some loss of information
+AH was double now str11
+AH was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AJ was double now str11
+AJ was forced to string; some loss of information
+AK was double now str11
+AK was forced to string; some loss of information
+AgeAdjustedMortalityWhite was double now str11
+AgeAdjustedMortalityWhite was forced to string; some loss of information
+AgeAdjustedMortalityWhite9 was double now str11
+AgeAdjustedMortalityWhite9 was forced to string; some loss of information
+AN was double now str11
+AN was forced to string; some loss of information
+AO was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+AQ was double now str11
+AQ was forced to string; some loss of information
+AR was double now str11
+AR was forced to string; some loss of information
+ChildMortalityRateAIAN was byte now str1
+ChildMortalityRateAIAN95 was byte now str1
+AU was byte now str1
+ChildMortalityRateAsian was double now str10
+ChildMortalityRateAsian was forced to string; some loss of information
+ChildMortalityRateAsian95 was double now str9
+ChildMortalityRateAsian95 was forced to string; some loss of information
+AX was double now str11
+AX was forced to string; some loss of information
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateBlack95 was double now str11
+ChildMortalityRateBlack95 was forced to string; some loss of information
+BA was double now str11
+BA was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+BC was double now str11
+BC was forced to string; some loss of information
+BD was double now str11
+BD was forced to string; some loss of information
+ChildMortalityRateWhite was double now str11
+ChildMortalityRateWhite was forced to string; some loss of information
+ChildMortalityRateWhite95 was double now str11
+ChildMortalityRateWhite95 was forced to string; some loss of information
+BG was double now str11
+BG was forced to string; some loss of information
+BH was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+BJ was double now str11
+BJ was forced to string; some loss of information
+BK was double now str11
+BK was forced to string; some loss of information
+InfantMortalityRateAIAN was byte now str1
+InfantMortalityRateAIAN95 was byte now str1
+BN was byte now str1
+InfantMortalityRateAsian was byte now str1
+InfantMortalityRateAsian95 was byte now str1
+BQ was byte now str1
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateBlack95 was double now str11
+InfantMortalityRateBlack95 was forced to string; some loss of information
+BT was double now str11
+BT was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+BV was double now str11
+BV was forced to string; some loss of information
+BW was double now str11
+BW was forced to string; some loss of information
+InfantMortalityRateWhite was double now str11
+InfantMortalityRateWhite was forced to string; some loss of information
+InfantMortalityRateWhite95 was double now str11
+InfantMortalityRateWhite95 was forced to string; some loss of information
+BZ was double now str11
+BZ was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+CC was double now str11
+CC was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+CE was double now str11
+CE was forced to string; some loss of information
+CF was double now str11
+CF was forced to string; some loss of information
+AdultswithDiabetes was double now str4
+CH was double now str4
+CI was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+CM was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+LimitedAccesstoHealthyFood was double now str11
+LimitedAccesstoHealthyFood was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+CR was double now str11
+CR was forced to string; some loss of information
+CS was double now str11
+CS was forced to string; some loss of information
+DrugOverdoseMortalityRateAI was byte now str1
+CU was byte now str1
+CV was byte now str1
+DrugOverdoseMortalityRateAs was byte now str1
+CX was byte now str1
+CY was byte now str1
+DrugOverdoseMortalityRateBl was double now str11
+DrugOverdoseMortalityRateBl was forced to string; some loss of information
+DA was double now str11
+DA was forced to string; some loss of information
+DB was double now str11
+DB was forced to string; some loss of information
+DrugOverdoseMortalityRateHi was double now str11
+DrugOverdoseMortalityRateHi was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+DE was double now str11
+DE was forced to string; some loss of information
+DrugOverdoseMortalityRateWh was double now str11
+DrugOverdoseMortalityRateWh was forced to string; some loss of information
+DG was double now str11
+DG was forced to string; some loss of information
+DH was double now str11
+DH was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MotorVehicleMortalityRate was double now str11
+MotorVehicleMortalityRate was forced to string; some loss of information
+DK was double now str11
+DK was forced to string; some loss of information
+DL was double now str11
+DL was forced to string; some loss of information
+MVMortalityRateAIAN was byte now str1
+MVMortalityRateAIAN95CI was byte now str1
+DO was byte now str1
+MVMortalityRateAsian was double now str11
+MVMortalityRateAsian was forced to string; some loss of information
+MVMortalityRateAsian95CI was double now str11
+MVMortalityRateAsian95CI was forced to string; some loss of information
+DR was double now str11
+MVMortalityRateBlack was double now str11
+MVMortalityRateBlack was forced to string; some loss of information
+MVMortalityRateBlack95CI was double now str11
+MVMortalityRateBlack95CI was forced to string; some loss of information
+DU was double now str11
+DU was forced to string; some loss of information
+MVMortalityRateHispanic was double now str11
+MVMortalityRateHispanic was forced to string; some loss of information
+MVMortalityRateHispanic95 was double now str11
+MVMortalityRateHispanic95 was forced to string; some loss of information
+DX was double now str11
+DX was forced to string; some loss of information
+MVMortalityRateWhite was double now str11
+MVMortalityRateWhite was forced to string; some loss of information
+MVMortalityRateWhite95CI was double now str11
+MVMortalityRateWhite95CI was forced to string; some loss of information
+EA was double now str11
+EA was forced to string; some loss of information
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+EC was double now str11
+EC was forced to string; some loss of information
+ED was double now str11
+ED was forced to string; some loss of information
+Uninsured was long now str6
+EF was double now str11
+EF was forced to string; some loss of information
+EG was double now str11
+EG was forced to string; some loss of information
+EH was double now str11
+EH was forced to string; some loss of information
+EI was long now str5
+EJ was double now str11
+EJ was forced to string; some loss of information
+EK was double now str11
+EK was forced to string; some loss of information
+EL was double now str11
+EL was forced to string; some loss of information
+OtherPrimaryCareProviderRate was double now str9
+OtherPrimaryCareProviderRate was forced to string; some loss of information
+OtherPrimaryCareProviderRati already string; no replace
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+EP was double now str11
+EP was forced to string; some loss of information
+EQ was double now str11
+EQ was forced to string; some loss of information
+AverageGradePerformance was double now str11
+AverageGradePerformance was forced to string; some loss of information
+AverageGradePerformanceAsian was byte now str1
+AverageGradePerformanceBlack was double now str11
+AverageGradePerformanceBlack was forced to string; some loss of information
+AverageGradePerformanceHispa was double now str11
+AverageGradePerformanceHispa was forced to string; some loss of information
+AverageGradePerformanceWhite was double now str11
+AverageGradePerformanceWhite was forced to string; some loss of information
+EW was double now str11
+EW was forced to string; some loss of information
+EX was double now str11
+EX was forced to string; some loss of information
+EY was double now str11
+EY was forced to string; some loss of information
+EZ was double now str11
+EZ was forced to string; some loss of information
+FA was double now str11
+FA was forced to string; some loss of information
+MedianHouseholdIncome was long now str6
+FC was double now str11
+FC was forced to string; some loss of information
+FD was double now str11
+FD was forced to string; some loss of information
+HouseholdIncomeAIAN was long now str5
+HouseholdIncomeAIAN95CI was double now str11
+HouseholdIncomeAIAN95CI was forced to string; some loss of information
+FG was double now str11
+FG was forced to string; some loss of information
+HouseholdIncomeAsian was long now str6
+HouseholdIncomeAsian95CI was double now str11
+HouseholdIncomeAsian95CI was forced to string; some loss of information
+FJ was double now str11
+FJ was forced to string; some loss of information
+HouseholdIncomeBlack was long now str5
+HouseholdIncomeBlack95CI was double now str11
+HouseholdIncomeBlack95CI was forced to string; some loss of information
+FM was double now str11
+FM was forced to string; some loss of information
+HouseholdIncomeHispanic was long now str6
+HouseholdIncomeHispanic95 was double now str11
+HouseholdIncomeHispanic95 was forced to string; some loss of information
+FP was double now str11
+FP was forced to string; some loss of information
+HouseholdIncomeWhite was long now str5
+HouseholdIncomeWhite95CI was double now str11
+HouseholdIncomeWhite95CI was forced to string; some loss of information
+FS was double now str11
+FS was forced to string; some loss of information
+EnrolledinFreeorReducedLu was double now str11
+EnrolledinFreeorReducedLu was forced to string; some loss of information
+Segregationindex was double now str11
+Segregationindex was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+FX was double now str11
+FX was forced to string; some loss of information
+FY was double now str11
+FY was forced to string; some loss of information
+HomicideRateAIAN was byte now str1
+HomicideRateAIAN95CILo was byte now str1
+HomicideRateAIAN95CIHi was byte now str1
+HomicideRateAsian was byte now str1
+HomicideRateAsian95CIL was byte now str1
+HomicideRateAsian95CIH was byte now str1
+HomicideRateBlack was double now str11
+HomicideRateBlack was forced to string; some loss of information
+HomicideRateBlack95CIL was double now str11
+HomicideRateBlack95CIL was forced to string; some loss of information
+HomicideRateBlack95CIH was double now str11
+HomicideRateBlack95CIH was forced to string; some loss of information
+HomicideRateHispanic was double now str11
+HomicideRateHispanic was forced to string; some loss of information
+HomicideRateHispanic95CI was double now str11
+HomicideRateHispanic95CI was forced to string; some loss of information
+GK was double now str11
+GK was forced to string; some loss of information
+HomicideRateWhite was double now str11
+HomicideRateWhite was forced to string; some loss of information
+HomicideRateWhite95CIL was double now str11
+HomicideRateWhite95CIL was forced to string; some loss of information
+HomicideRateWhite95CIH was double now str11
+HomicideRateWhite95CIH was forced to string; some loss of information
+GO was int now str4
+SuicideRateAgeAdjusted was double now str11
+SuicideRateAgeAdjusted was forced to string; some loss of information
+GQ was double now str11
+GQ was forced to string; some loss of information
+GR was double now str11
+GR was forced to string; some loss of information
+CrudeRate was double now str11
+CrudeRate was forced to string; some loss of information
+SuicideRateAIAN was byte now str1
+SuicideRateAIAN95CILow was byte now str1
+SuicideRateAIAN95CIHig was byte now str1
+SuicideRateAsian was double now str11
+SuicideRateAsian was forced to string; some loss of information
+SuicideRateAsian95CILo was double now str11
+SuicideRateAsian95CILo was forced to string; some loss of information
+SuicideRateAsian95CIHi was double now str10
+SuicideRateAsian95CIHi was forced to string; some loss of information
+SuicideRateBlack was double now str11
+SuicideRateBlack was forced to string; some loss of information
+SuicideRateBlack95CILo was double now str11
+SuicideRateBlack95CILo was forced to string; some loss of information
+SuicideRateBlack95CIHi was double now str11
+SuicideRateBlack95CIHi was forced to string; some loss of information
+SuicideRateHispanic was double now str11
+SuicideRateHispanic was forced to string; some loss of information
+SuicideRateHispanic95CI was double now str11
+SuicideRateHispanic95CI was forced to string; some loss of information
+HE was double now str11
+HE was forced to string; some loss of information
+SuicideRateWhite was double now str11
+SuicideRateWhite was forced to string; some loss of information
+SuicideRateWhite95CILo was double now str11
+SuicideRateWhite95CILo was forced to string; some loss of information
+SuicideRateWhite95CIHi was double now str11
+SuicideRateWhite95CIHi was forced to string; some loss of information
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+HK was double now str11
+HK was forced to string; some loss of information
+HL was double now str11
+HL was forced to string; some loss of information
+FirearmFatalitiesRateAIAN was byte now str1
+FirearmFatalitiesRateAIAN9 was byte now str1
+HO was byte now str1
+FirearmFatalitiesRateAsian was byte now str1
+HQ was byte now str1
+HR was byte now str1
+FirearmFatalitiesRateBlack was double now str11
+FirearmFatalitiesRateBlack was forced to string; some loss of information
+HT was double now str11
+HT was forced to string; some loss of information
+HU was double now str11
+HU was forced to string; some loss of information
+FirearmFatalitiesRateHispani was double now str9
+FirearmFatalitiesRateHispani was forced to string; some loss of information
+HW was double now str11
+HW was forced to string; some loss of information
+HX was double now str11
+HX was forced to string; some loss of information
+FirearmFatalitiesRateWhite was double now str11
+FirearmFatalitiesRateWhite was forced to string; some loss of information
+HZ was double now str11
+HZ was forced to string; some loss of information
+IA was double now str11
+IA was forced to string; some loss of information
+NonPetitionedCases was byte now str1
+PetitionedCases was byte now str1
+Denominator was byte now str1
+JuvenileArrestRate was byte now str1
+AverageTrafficVolumeperMeter was double now str11
+AverageTrafficVolumeperMeter was forced to string; some loss of information
+Homeowners was long now str7
+IH was double now str11
+IH was forced to string; some loss of information
+II was double now str11
+II was forced to string; some loss of information
+IJ was double now str11
+IJ was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+SevereHousingCostBurden was double now str11
+SevereHousingCostBurden was forced to string; some loss of information
+IM was double now str11
+IM was forced to string; some loss of information
+IN was double now str11
+IN was forced to string; some loss of information
+Population was long now str7
+lessthan18yearsofage was double now str11
+lessthan18yearsofage was forced to string; some loss of information
+IQ was double now str11
+IQ was forced to string; some loss of information
+Black was long now str6
+IS was double now str11
+IS was forced to string; some loss of information
+AmericanIndianAlaskaNativ was int now str5
+IU was double now str11
+Asian was long now str5
+IW was double now str11
+IW was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+IY was double now str11
+Hispanic was long now str6
+JA was double now str11
+JA was forced to string; some loss of information
+NonHispanicWhite was long now str7
+JC was double now str11
+JC was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+JE was double now str11
+JE was forced to string; some loss of information
+JF was double now str11
+JF was forced to string; some loss of information
+JG was double now str11
+JG was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+Rural was long now str7
+JJ was double now str11
+JJ was forced to string; some loss of information
+Year already string; no replace
+(variable BH was str4, now str11 to accommodate using data's values)
+(variable CM was str4, now str11 to accommodate using data's values)
+(variable CV was str1, now str11 to accommodate using data's values)
+(variable CX was str1, now str11 to accommodate using data's values)
+(variable CH was str4, now str11 to accommodate using data's values)
+(variable CU was str1, now str11 to accommodate using data's values)
+(variable AB was str1, now str4 to accommodate using data's values)
+(variable AO was str4, now str11 to accommodate using data's values)
+(variable AU was str1, now str11 to accommodate using data's values)
+(variable BN was str1, now str4 to accommodate using data's values)
+(variable BQ was str1, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2021 county health rankings kentucky data - v1.xlsx
+FIPS          Y             ChildMor~n95  InfantMort~c  CS            MVMort~n95CI  CohortSize    HouseholdI~k  HomicideRa~c  Suic~e95CILo  JuvenileAr~e  JE
+State         AgeAdjuste~N  AX            BV            DrugOverdo~I  DR            HighSchool~e  Househ~k95CI  HomicideRa~I  Suic~e95CIHi  TrafficVol~e  Hispanic
+County        AgeAdjust~95  ChildMorta~k  BW            CU            MVMortalit~k  Disconnect~h  FO            GM            FirearmFat~s  Homeowners    JG
+LifeExpect~y  AB            ChildMor~k95  InfantMo~ite  CV            MVMort~k95CI  ER            HouseholdI~c  Homicide~ite  FirearmF~ate  IJ            NonHispani~e
+CILow         AgeAdjuste~n  BA            InfantMo~e95  DrugOverd~As  DU            ES            Household~95  Homic~e95CIL  HM            IK            JI
+CIHigh        AgeAdjust~n9  ChildMorta~c  BZ            CX            MVMortalit~c  AverageGr~ce  FR            Homic~e95CIH  HN            IL            NotProfici~h
+LifeExpect~N  AE            BC            FrequentPh~s  CY            MVMortali~95  AverageGra~n  HouseholdI~e  GQ            FirearmFat~N  Households~u  JK
+LifeEx~N95CI  AgeAdjuste~k  BD            CB            DrugOverdo~l  DX            AverageGra~k  Househ~e95CI  SuicideRat~d  FirearmFat~9  SevereHous~n  JL
+I             AgeAdjust~k9  ChildMor~ite  CC            DA            MVMortalit~e  AverageGra~a  FU            GS            HQ            IO            JM
+LifeExpect~n  AH            ChildMor~e95  FrequentMe~s  DB            MVMort~e95CI  AverageGr~te  Enrolledin~u  GT            FirearmFat~n  IP            Female
+LifeEx~n95CI  AgeAdjuste~c  BG            CE            DrugOverdo~i  EA            EY            Segreg~index  CrudeRate     HS            BroadbandA~s  Rural
+L             AJ            BH            CF            DD            Insufficie~p  EZ            Segreg~Index  SuicideRat~N  HT            Numerator     JP
+LifeExpect~k  AK            InfantMo~ate  Adultswith~s  DE            EC            FA            HomicideRate  SuicideRat~w  FirearmFat~k  IS            JQ
+LifeEx~k95CI  AgeAdjus~ite  BJ            CH            DrugOverdo~h  ED            FB            FZ            SuicideRat~g  HV            IT            Year
+O             AgeAdjust~e9  BK            CI            DG            Uninsured     FC            GA            SuicideRat~n  HW            Population
+LifeExpect~c  AN            InfantMort~N  HIVCases      DH            EF            MedianHous~e  HomicideRa~N  Suic~n95CILo  FirearmFat~i  LessThan18~e
+LifeExpe~95C  AO            InfantMo~N95  HIVPrevale~e  MotorVehic~s  EG            FE            HomicideRa~o  Suic~n95CIHi  HY            IW
+R             ChildMor~ate  BN            FoodInsecure  MotorVehic~e  EH            FF            HomicideRa~i  SuicideRat~k  HZ            Black
+LifeExpect~e  AQ            InfantMort~n  CM            DK            EI            HouseholdI~N  HomicideRa~n  Suic~k95CILo  FirearmF~ite  IY
+LifeEx~e95CI  AR            InfantMo~n95  LimitedAcc~s  DL            EJ            Househ~N95CI  Homic~n95CIL  Suic~k95CIHi  IB            AmericanIn~v
+U             ChildMorta~N  BQ            LimitedAcc~d  MVMortalit~N  EK            FI            Homic~n95CIH  SuicideRat~c  IC            JA
+Deaths        ChildMor~N95  InfantMort~k  DrugOverd~hs  MVMort~N95CI  EL            HouseholdI~n  HomicideRa~k  SuicideRat~I  NonPetitio~s  Asian
+AgeAdjus~ate  AU            InfantMo~k95  DrugOverdo~e  DO            OtherPrima~e  Househ~n95CI  Homic~k95CIL  HG            Petitioned~s  JC
+X             ChildMorta~n  BT            CR            MVMortalit~n  OtherPrima~i  FL            Homic~k95CIH  SuicideRat~e  Denominator   NativeHawa~c
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyAIAN was double now str11
+LifeExpectancyAIAN was forced to string; some loss of information
+LifeExpectancyAIAN95CI was double now str11
+LifeExpectancyAIAN95CI was forced to string; some loss of information
+I was double now str11
+LifeExpectancyAsian was double now str11
+LifeExpectancyAsian was forced to string; some loss of information
+LifeExpectancyAsian95CI was double now str11
+LifeExpectancyAsian95CI was forced to string; some loss of information
+L was double now str11
+L was forced to string; some loss of information
+LifeExpectancyBlack was double now str11
+LifeExpectancyBlack was forced to string; some loss of information
+LifeExpectancyBlack95CI was double now str11
+LifeExpectancyBlack95CI was forced to string; some loss of information
+O was double now str11
+O was forced to string; some loss of information
+LifeExpectancyHispanic was double now str11
+LifeExpectancyHispanic was forced to string; some loss of information
+LifeExpectancyHispanic95C was double now str11
+LifeExpectancyHispanic95C was forced to string; some loss of information
+R was double now str11
+R was forced to string; some loss of information
+LifeExpectancyWhite was double now str11
+LifeExpectancyWhite was forced to string; some loss of information
+LifeExpectancyWhite95CI was double now str11
+LifeExpectancyWhite95CI was forced to string; some loss of information
+U was double now str11
+U was forced to string; some loss of information
+Deaths was long now str5
+AgeAdjustedDeathRate was double now str11
+AgeAdjustedDeathRate was forced to string; some loss of information
+X was double now str11
+X was forced to string; some loss of information
+Y was double now str11
+Y was forced to string; some loss of information
+AgeAdjustedMortalityAIAN was double now str11
+AgeAdjustedMortalityAIAN was forced to string; some loss of information
+AgeAdjustedMortalityAIAN95 was double now str11
+AgeAdjustedMortalityAIAN95 was forced to string; some loss of information
+AB was double now str11
+AB was forced to string; some loss of information
+AgeAdjustedMortalityAsian was double now str11
+AgeAdjustedMortalityAsian was forced to string; some loss of information
+AgeAdjustedMortalityAsian9 was double now str11
+AgeAdjustedMortalityAsian9 was forced to string; some loss of information
+AE was double now str11
+AE was forced to string; some loss of information
+AgeAdjustedMortalityBlack was double now str11
+AgeAdjustedMortalityBlack was forced to string; some loss of information
+AgeAdjustedMortalityBlack9 was double now str11
+AgeAdjustedMortalityBlack9 was forced to string; some loss of information
+AH was double now str11
+AH was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AJ was double now str11
+AJ was forced to string; some loss of information
+AK was double now str11
+AK was forced to string; some loss of information
+AgeAdjustedMortalityWhite was double now str11
+AgeAdjustedMortalityWhite was forced to string; some loss of information
+AgeAdjustedMortalityWhite9 was double now str11
+AgeAdjustedMortalityWhite9 was forced to string; some loss of information
+AN was double now str11
+AN was forced to string; some loss of information
+AO was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+AQ was double now str11
+AQ was forced to string; some loss of information
+AR was double now str11
+AR was forced to string; some loss of information
+ChildMortalityRateAIAN was byte now str1
+ChildMortalityRateAIAN95 was byte now str1
+AU was byte now str1
+ChildMortalityRateAsian was double now str11
+ChildMortalityRateAsian was forced to string; some loss of information
+ChildMortalityRateAsian95 was double now str11
+ChildMortalityRateAsian95 was forced to string; some loss of information
+AX was double now str11
+AX was forced to string; some loss of information
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateBlack95 was double now str11
+ChildMortalityRateBlack95 was forced to string; some loss of information
+BA was double now str11
+BA was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+BC was double now str11
+BC was forced to string; some loss of information
+BD was double now str11
+BD was forced to string; some loss of information
+ChildMortalityRateWhite was double now str11
+ChildMortalityRateWhite was forced to string; some loss of information
+ChildMortalityRateWhite95 was double now str11
+ChildMortalityRateWhite95 was forced to string; some loss of information
+BG was double now str11
+BG was forced to string; some loss of information
+BH was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+BJ was double now str11
+BJ was forced to string; some loss of information
+BK was double now str11
+BK was forced to string; some loss of information
+InfantMortalityRateAIAN was byte now str1
+InfantMortalityRateAIAN95 was byte now str1
+BN was byte now str1
+InfantMortalityRateAsian was double now str11
+InfantMortalityRateAsian95 was double now str10
+InfantMortalityRateAsian95 was forced to string; some loss of information
+BQ was double now str10
+BQ was forced to string; some loss of information
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateBlack95 was double now str11
+InfantMortalityRateBlack95 was forced to string; some loss of information
+BT was double now str11
+BT was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+BV was double now str11
+BV was forced to string; some loss of information
+BW was double now str11
+BW was forced to string; some loss of information
+InfantMortalityRateWhite was double now str11
+InfantMortalityRateWhite was forced to string; some loss of information
+InfantMortalityRateWhite95 was double now str11
+InfantMortalityRateWhite95 was forced to string; some loss of information
+BZ was double now str11
+BZ was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+CC was double now str11
+CC was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+CE was double now str11
+CE was forced to string; some loss of information
+CF was double now str11
+CF was forced to string; some loss of information
+AdultswithDiabetes was double now str4
+CH was double now str4
+CI was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+CM was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+LimitedAccesstoHealthyFood was double now str11
+LimitedAccesstoHealthyFood was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+CR was double now str11
+CR was forced to string; some loss of information
+CS was double now str11
+CS was forced to string; some loss of information
+DrugOverdoseMortalityRateAI was byte now str1
+CU was byte now str1
+CV was byte now str1
+DrugOverdoseMortalityRateAs was byte now str1
+CX was byte now str1
+CY was byte now str1
+DrugOverdoseMortalityRateBl was double now str11
+DrugOverdoseMortalityRateBl was forced to string; some loss of information
+DA was double now str11
+DA was forced to string; some loss of information
+DB was double now str11
+DB was forced to string; some loss of information
+DrugOverdoseMortalityRateHi was double now str11
+DrugOverdoseMortalityRateHi was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+DE was double now str11
+DE was forced to string; some loss of information
+DrugOverdoseMortalityRateWh was double now str11
+DrugOverdoseMortalityRateWh was forced to string; some loss of information
+DG was double now str11
+DG was forced to string; some loss of information
+DH was double now str11
+DH was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MotorVehicleMortalityRate was double now str11
+MotorVehicleMortalityRate was forced to string; some loss of information
+DK was double now str11
+DK was forced to string; some loss of information
+DL was double now str11
+DL was forced to string; some loss of information
+MVMortalityRateAIAN was byte now str1
+MVMortalityRateAIAN95CI was byte now str1
+DO was byte now str1
+MVMortalityRateAsian was double now str11
+MVMortalityRateAsian was forced to string; some loss of information
+MVMortalityRateAsian95CI was double now str11
+MVMortalityRateAsian95CI was forced to string; some loss of information
+DR was double now str11
+DR was forced to string; some loss of information
+MVMortalityRateBlack was double now str11
+MVMortalityRateBlack was forced to string; some loss of information
+MVMortalityRateBlack95CI was double now str11
+MVMortalityRateBlack95CI was forced to string; some loss of information
+DU was double now str11
+DU was forced to string; some loss of information
+MVMortalityRateHispanic was double now str11
+MVMortalityRateHispanic was forced to string; some loss of information
+MVMortalityRateHispanic95 was double now str11
+MVMortalityRateHispanic95 was forced to string; some loss of information
+DX was double now str11
+DX was forced to string; some loss of information
+MVMortalityRateWhite was double now str11
+MVMortalityRateWhite was forced to string; some loss of information
+MVMortalityRateWhite95CI was double now str11
+MVMortalityRateWhite95CI was forced to string; some loss of information
+EA was double now str11
+EA was forced to string; some loss of information
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+EC was double now str11
+EC was forced to string; some loss of information
+ED was double now str11
+ED was forced to string; some loss of information
+Uninsured was long now str6
+EF was double now str11
+EF was forced to string; some loss of information
+EG was double now str11
+EG was forced to string; some loss of information
+EH was double now str11
+EH was forced to string; some loss of information
+EI was long now str5
+EJ was double now str11
+EJ was forced to string; some loss of information
+EK was double now str11
+EK was forced to string; some loss of information
+EL was double now str11
+EL was forced to string; some loss of information
+OtherPrimaryCareProviderRate was double now str9
+OtherPrimaryCareProviderRate was forced to string; some loss of information
+OtherPrimaryCareProviderRati already string; no replace
+CohortSize was long now str5
+HighSchoolGraduationRate was double now str11
+HighSchoolGraduationRate was forced to string; some loss of information
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+ER was double now str11
+ER was forced to string; some loss of information
+ES was double now str11
+ES was forced to string; some loss of information
+AverageGradePerformance was double now str11
+AverageGradePerformanceAsian was double now str11
+AverageGradePerformanceBlack was double now str11
+AverageGradePerformanceHispa was double now str11
+AverageGradePerformanceWhite was double now str11
+EY was double now str11
+EZ was double now str11
+FA was double now str11
+FB was double now str11
+FC was double now str11
+MedianHouseholdIncome was long now str6
+FE was double now str11
+FE was forced to string; some loss of information
+FF was double now str11
+FF was forced to string; some loss of information
+HouseholdIncomeAIAN was long now str6
+HouseholdIncomeAIAN95CI was double now str11
+HouseholdIncomeAIAN95CI was forced to string; some loss of information
+FI was double now str11
+FI was forced to string; some loss of information
+HouseholdIncomeAsian was long now str6
+HouseholdIncomeAsian95CI was double now str11
+HouseholdIncomeAsian95CI was forced to string; some loss of information
+FL was double now str11
+FL was forced to string; some loss of information
+HouseholdIncomeBlack was long now str5
+HouseholdIncomeBlack95CI was double now str11
+HouseholdIncomeBlack95CI was forced to string; some loss of information
+FO was double now str11
+FO was forced to string; some loss of information
+HouseholdIncomeHispanic was long now str6
+HouseholdIncomeHispanic95 was double now str11
+HouseholdIncomeHispanic95 was forced to string; some loss of information
+FR was double now str11
+FR was forced to string; some loss of information
+HouseholdIncomeWhite was long now str6
+HouseholdIncomeWhite95CI was double now str11
+HouseholdIncomeWhite95CI was forced to string; some loss of information
+FU was double now str11
+FU was forced to string; some loss of information
+EnrolledinFreeorReducedLu was double now str11
+EnrolledinFreeorReducedLu was forced to string; some loss of information
+Segregationindex was double now str11
+Segregationindex was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+FZ was double now str11
+FZ was forced to string; some loss of information
+GA was double now str11
+GA was forced to string; some loss of information
+HomicideRateAIAN was byte now str1
+HomicideRateAIAN95CILo was byte now str1
+HomicideRateAIAN95CIHi was byte now str1
+HomicideRateAsian was byte now str1
+HomicideRateAsian95CIL was byte now str1
+HomicideRateAsian95CIH was byte now str1
+HomicideRateBlack was double now str11
+HomicideRateBlack was forced to string; some loss of information
+HomicideRateBlack95CIL was double now str11
+HomicideRateBlack95CIL was forced to string; some loss of information
+HomicideRateBlack95CIH was double now str11
+HomicideRateBlack95CIH was forced to string; some loss of information
+HomicideRateHispanic was double now str11
+HomicideRateHispanic was forced to string; some loss of information
+HomicideRateHispanic95CI was double now str11
+HomicideRateHispanic95CI was forced to string; some loss of information
+GM was double now str11
+GM was forced to string; some loss of information
+HomicideRateWhite was double now str11
+HomicideRateWhite was forced to string; some loss of information
+HomicideRateWhite95CIL was double now str11
+HomicideRateWhite95CIL was forced to string; some loss of information
+HomicideRateWhite95CIH was double now str11
+HomicideRateWhite95CIH was forced to string; some loss of information
+GQ was int now str4
+SuicideRateAgeAdjusted was double now str11
+SuicideRateAgeAdjusted was forced to string; some loss of information
+GS was double now str11
+GS was forced to string; some loss of information
+GT was double now str11
+GT was forced to string; some loss of information
+CrudeRate was double now str11
+CrudeRate was forced to string; some loss of information
+SuicideRateAIAN was byte now str1
+SuicideRateAIAN95CILow was byte now str1
+SuicideRateAIAN95CIHig was byte now str1
+SuicideRateAsian was double now str11
+SuicideRateAsian was forced to string; some loss of information
+SuicideRateAsian95CILo was double now str11
+SuicideRateAsian95CILo was forced to string; some loss of information
+SuicideRateAsian95CIHi was double now str11
+SuicideRateAsian95CIHi was forced to string; some loss of information
+SuicideRateBlack was double now str11
+SuicideRateBlack was forced to string; some loss of information
+SuicideRateBlack95CILo was double now str11
+SuicideRateBlack95CILo was forced to string; some loss of information
+SuicideRateBlack95CIHi was double now str11
+SuicideRateBlack95CIHi was forced to string; some loss of information
+SuicideRateHispanic was double now str11
+SuicideRateHispanic was forced to string; some loss of information
+SuicideRateHispanic95CI was double now str11
+SuicideRateHispanic95CI was forced to string; some loss of information
+HG was double now str11
+HG was forced to string; some loss of information
+SuicideRateWhite was double now str11
+SuicideRateWhite was forced to string; some loss of information
+SuicideRateWhite95CILo was double now str11
+SuicideRateWhite95CILo was forced to string; some loss of information
+SuicideRateWhite95CIHi was double now str11
+SuicideRateWhite95CIHi was forced to string; some loss of information
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+HM was double now str11
+HM was forced to string; some loss of information
+HN was double now str11
+HN was forced to string; some loss of information
+FirearmFatalitiesRateAIAN was byte now str1
+FirearmFatalitiesRateAIAN9 was byte now str1
+HQ was byte now str1
+FirearmFatalitiesRateAsian was double now str11
+FirearmFatalitiesRateAsian was forced to string; some loss of information
+HS was double now str11
+HS was forced to string; some loss of information
+HT was double now str11
+HT was forced to string; some loss of information
+FirearmFatalitiesRateBlack was double now str11
+FirearmFatalitiesRateBlack was forced to string; some loss of information
+HV was double now str11
+HV was forced to string; some loss of information
+HW was double now str11
+HW was forced to string; some loss of information
+FirearmFatalitiesRateHispani was double now str11
+FirearmFatalitiesRateHispani was forced to string; some loss of information
+HY was double now str11
+HY was forced to string; some loss of information
+HZ was double now str11
+HZ was forced to string; some loss of information
+FirearmFatalitiesRateWhite was double now str11
+FirearmFatalitiesRateWhite was forced to string; some loss of information
+IB was double now str11
+IB was forced to string; some loss of information
+IC was double now str11
+IC was forced to string; some loss of information
+NonPetitionedCases was byte now str1
+PetitionedCases was byte now str1
+Denominator was byte now str1
+JuvenileArrestRate was byte now str1
+TrafficVolume was double now str11
+TrafficVolume was forced to string; some loss of information
+Homeowners was long now str7
+IJ was double now str11
+IJ was forced to string; some loss of information
+IK was double now str11
+IK was forced to string; some loss of information
+IL was double now str11
+IL was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+SevereHousingCostBurden was double now str11
+SevereHousingCostBurden was forced to string; some loss of information
+IO was double now str11
+IO was forced to string; some loss of information
+IP was double now str11
+IP was forced to string; some loss of information
+BroadbandAccess was double now str11
+BroadbandAccess was forced to string; some loss of information
+Numerator was long now str7
+IS was double now str11
+IS was forced to string; some loss of information
+IT was double now str11
+IT was forced to string; some loss of information
+Population was long now str7
+LessThan18YearsofAge was double now str11
+LessThan18YearsofAge was forced to string; some loss of information
+IW was double now str11
+IW was forced to string; some loss of information
+Black was long now str6
+IY was double now str11
+IY was forced to string; some loss of information
+AmericanIndianAlaskaNativ was int now str5
+JA was double now str11
+Asian was long now str5
+JC was double now str11
+JC was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+JE was double now str11
+Hispanic was long now str6
+JG was double now str11
+JG was forced to string; some loss of information
+NonHispanicWhite was long now str7
+JI was double now str11
+JI was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+JK was double now str11
+JK was forced to string; some loss of information
+JL was double now str11
+JL was forced to string; some loss of information
+JM was double now str11
+JM was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+Rural was long now str7
+JP was double now str11
+JP was forced to string; some loss of information
+JQ was byte now str1
+Year already string; no replace
+(variable AO was str4, now str11 to accommodate using data's values)
+(variable AU was str1, now str11 to accommodate using data's values)
+(variable BH was str4, now str11 to accommodate using data's values)
+(variable BN was str1, now str4 to accommodate using data's values)
+(variable BQ was str10, now str11 to accommodate using data's values)
+(variable CH was str4, now str11 to accommodate using data's values)
+(variable CM was str4, now str11 to accommodate using data's values)
+(variable CU was str1, now str11 to accommodate using data's values)
+(variable CV was str1, now str11 to accommodate using data's values)
+(variable CX was str1, now str11 to accommodate using data's values)
+(variable GQ was str4, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2022 county health rankings kentucky data - v1.xlsx
+FIPS          Z             ChildMor~n95  BX            CW            MVMort~k95CI  EU            HouseholdI~n  Homic~n95CIL  SuicideRat~c  NonPetitio~s  JP
+State         AA            AZ            BY            CX            DW            AverageGr~ce  Househ~n95CI  Homic~n95CIH  SuicideRat~I  Petitioned~s  NativeHawa~c
+County        AgeAdjuste~N  ChildMorta~k  InfantMo~ite  DrugOverd~As  MVMortalit~c  AverageGra~n  FV            HomicideRa~k  HT            Denominator   JR
+deathsduet~g  AgeAdjust~95  ChildMor~k95  InfantMo~e95  CZ            MVMortali~95  AverageGra~k  HouseholdI~k  Homic~k95CIL  SuicideRat~e  JuvenileAr~e  Hispanic
+COVID19dea~e  AD            BC            CB            DA            DZ            AverageGra~a  Househ~k95CI  Homic~k95CIH  Suic~e95CILo  TrafficVol~e  JT
+LifeExpect~y  AgeAdjuste~n  ChildMorta~c  FrequentPh~s  DrugOverdo~l  MVMortalit~e  AverageGr~te  FY            HomicideRa~c  Suic~e95CIHi  Homeowners    NonHispani~e
+CILow         AgeAdjust~n9  BE            CD            DC            MVMort~e95CI  FA            HouseholdI~c  HomicideRa~I  FirearmFat~s  IW            JV
+CIHigh        AG            BF            CE            DD            EC            FB            Household~95  GZ            FirearmF~ate  IX            NotProfici~h
+LifeExpect~N  AgeAdjuste~k  ChildMor~ite  FrequentMe~s  DrugOverdo~i  Insufficie~p  FC            GB            Homicide~ite  HZ            IY            JX
+LifeEx~N95CI  AgeAdjust~k9  ChildMor~e95  CG            DF            EE            FD            HouseholdI~e  Homic~e95CIL  IA            Households~u  JY
+K             AJ            BI            CH            DG            EF            FE            Househ~e95CI  Homic~e95CIH  FirearmFat~N  SevereHous~n  JZ
+LifeExpect~n  AgeAdjuste~c  BJ            Adultswith~s  DrugOverdo~h  Uninsured     Segreg~index  GE            HD            FirearmFat~9  JB            female
+LifeEx~n95CI  AL            InfantMo~ate  CJ            DI            EH            Spendingpe~l  Enrolledin~u  SuicideRat~d  ID            JC            ruralresid~s
+N             AM            BL            CK            DJ            EI            Schoolfund~g  GG            HF            FirearmFat~n  BroadbandA~s  rural
+LifeExpect~k  AgeAdjuste~e  BM            HIVCases      MotorVehic~s  EJ            WomensMedi~s  Segreg~Index  HG            IF            Numerator     Year
+LifeEx~k95CI  AgeAdjust~e9  InfantMort~N  HIVPrevale~e  MotorVehic~e  EK            MensMedian~s  householdi~r  CrudeRate     IG            JF
+Q             AP            InfantMo~N95  FoodInsecure  DM            EL            GenderPayGap  childcarec~s  SuicideRat~N  FirearmFat~k  JG
+LifeExpect~c  AQ            BP            CO            DN            EM            FL            CountyValue   SuicideRat~w  II            Population
+LifeExpe~95C  ChildMor~ate  InfantMort~n  LimitedAcc~s  MVMortalit~N  EN            FM            HomicideRate  SuicideRat~g  IJ            LessThan18~e
+T             AS            InfantMo~n95  LimitedAcc~d  MVMort~N95CI  OtherPrima~e  MedianHous~e  GM            SuicideRat~n  FirearmFat~i  JJ
+LifeExpect~e  AT            BS            DrugOverd~hs  DQ            OtherPrima~i  FO            GN            Suic~n95CILo  IL            Black
+LifeEx~e95CI  ChildMorta~N  InfantMort~k  DrugOverdo~e  MVMortalit~n  CohortSize    FP            HomicideRa~N  Suic~n95CIHi  IM            JL
+W             ChildMor~N95  InfantMo~k95  CT            MVMort~n95CI  HighSchool~e  HouseholdI~N  HomicideRa~o  SuicideRat~k  FirearmF~ite  AmericanIn~v
+Deaths        AW            BV            CU            DT            Disconnect~h  Househ~N95CI  HomicideRa~i  Suic~k95CILo  IO            JN
+Ageadjuste~e  ChildMorta~n  InfantMort~c  DrugOverdo~I  MVMortalit~k  ET            FS            HomicideRa~n  Suic~k95CIHi  IP            Asian
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+deathsduetoCOVID19during was int now str4
+COVID19deathrate was double now str11
+COVID19deathrate was forced to string; some loss of information
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyAIAN was double now str11
+LifeExpectancyAIAN was forced to string; some loss of information
+LifeExpectancyAIAN95CI was double now str11
+LifeExpectancyAIAN95CI was forced to string; some loss of information
+K was double now str11
+K was forced to string; some loss of information
+LifeExpectancyAsian was double now str11
+LifeExpectancyAsian was forced to string; some loss of information
+LifeExpectancyAsian95CI was double now str11
+LifeExpectancyAsian95CI was forced to string; some loss of information
+N was double now str11
+N was forced to string; some loss of information
+LifeExpectancyBlack was double now str11
+LifeExpectancyBlack was forced to string; some loss of information
+LifeExpectancyBlack95CI was double now str11
+LifeExpectancyBlack95CI was forced to string; some loss of information
+Q was double now str11
+Q was forced to string; some loss of information
+LifeExpectancyHispanic was double now str11
+LifeExpectancyHispanic was forced to string; some loss of information
+LifeExpectancyHispanic95C was double now str11
+LifeExpectancyHispanic95C was forced to string; some loss of information
+T was double now str11
+T was forced to string; some loss of information
+LifeExpectancywhite was double now str11
+LifeExpectancywhite was forced to string; some loss of information
+LifeExpectancywhite95CI was double now str11
+LifeExpectancywhite95CI was forced to string; some loss of information
+W was double now str11
+W was forced to string; some loss of information
+Deaths was long now str5
+AgeadjustedDeathRate was double now str11
+AgeadjustedDeathRate was forced to string; some loss of information
+Z was double now str11
+Z was forced to string; some loss of information
+AA was double now str11
+AA was forced to string; some loss of information
+AgeAdjustedMortalityAIAN was double now str11
+AgeAdjustedMortalityAIAN was forced to string; some loss of information
+AgeAdjustedMortalityAIAN95 was double now str10
+AgeAdjustedMortalityAIAN95 was forced to string; some loss of information
+AD was double now str11
+AD was forced to string; some loss of information
+AgeAdjustedMortalityAsian was double now str11
+AgeAdjustedMortalityAsian was forced to string; some loss of information
+AgeAdjustedMortalityAsian9 was double now str11
+AgeAdjustedMortalityAsian9 was forced to string; some loss of information
+AG was double now str11
+AG was forced to string; some loss of information
+AgeAdjustedMortalityBlack was double now str11
+AgeAdjustedMortalityBlack was forced to string; some loss of information
+AgeAdjustedMortalityBlack9 was double now str11
+AgeAdjustedMortalityBlack9 was forced to string; some loss of information
+AJ was double now str11
+AJ was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AL was double now str11
+AL was forced to string; some loss of information
+AM was double now str11
+AM was forced to string; some loss of information
+AgeAdjustedMortalitywhite was double now str11
+AgeAdjustedMortalitywhite was forced to string; some loss of information
+AgeAdjustedMortalitywhite9 was double now str11
+AgeAdjustedMortalitywhite9 was forced to string; some loss of information
+AP was double now str11
+AP was forced to string; some loss of information
+AQ was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+AS was double now str11
+AS was forced to string; some loss of information
+AT was double now str11
+AT was forced to string; some loss of information
+ChildMortalityRateAIAN was byte now str1
+ChildMortalityRateAIAN95 was byte now str1
+AW was byte now str1
+ChildMortalityRateAsian was double now str11
+ChildMortalityRateAsian was forced to string; some loss of information
+ChildMortalityRateAsian95 was double now str11
+ChildMortalityRateAsian95 was forced to string; some loss of information
+AZ was double now str11
+AZ was forced to string; some loss of information
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateBlack95 was double now str11
+ChildMortalityRateBlack95 was forced to string; some loss of information
+BC was double now str11
+BC was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+BE was double now str11
+BE was forced to string; some loss of information
+BF was double now str11
+BF was forced to string; some loss of information
+ChildMortalityRatewhite was double now str11
+ChildMortalityRatewhite was forced to string; some loss of information
+ChildMortalityRatewhite95 was double now str11
+ChildMortalityRatewhite95 was forced to string; some loss of information
+BI was double now str11
+BI was forced to string; some loss of information
+BJ was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+BL was double now str11
+BL was forced to string; some loss of information
+BM was double now str11
+BM was forced to string; some loss of information
+InfantMortalityRateAIAN was byte now str1
+InfantMortalityRateAIAN95 was byte now str1
+BP was byte now str1
+InfantMortalityRateAsian was double now str11
+InfantMortalityRateAsian was forced to string; some loss of information
+InfantMortalityRateAsian95 was double now str11
+InfantMortalityRateAsian95 was forced to string; some loss of information
+BS was double now str11
+BS was forced to string; some loss of information
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateBlack95 was double now str11
+InfantMortalityRateBlack95 was forced to string; some loss of information
+BV was double now str11
+BV was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+BX was double now str11
+BX was forced to string; some loss of information
+BY was double now str11
+BY was forced to string; some loss of information
+InfantMortalityRatewhite was double now str11
+InfantMortalityRatewhite was forced to string; some loss of information
+InfantMortalityRatewhite95 was double now str11
+InfantMortalityRatewhite95 was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+CD was double now str11
+CD was forced to string; some loss of information
+CE was double now str11
+CE was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+CG was double now str11
+CG was forced to string; some loss of information
+CH was double now str11
+CH was forced to string; some loss of information
+AdultswithDiabetes was double now str4
+CJ was double now str4
+CK was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+CO was double now str4
+LimitedAccess was double now str11
+LimitedAccess was forced to string; some loss of information
+LimitedAccesstoHealthyFood was double now str11
+LimitedAccesstoHealthyFood was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+CT was double now str11
+CT was forced to string; some loss of information
+CU was double now str11
+CU was forced to string; some loss of information
+DrugOverdoseMortalityRateAI was byte now str1
+CW was byte now str1
+CX was byte now str1
+DrugOverdoseMortalityRateAs was double now str11
+DrugOverdoseMortalityRateAs was forced to string; some loss of information
+CZ was double now str11
+CZ was forced to string; some loss of information
+DA was double now str11
+DA was forced to string; some loss of information
+DrugOverdoseMortalityRateBl was double now str11
+DrugOverdoseMortalityRateBl was forced to string; some loss of information
+DC was double now str11
+DC was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+DrugOverdoseMortalityRateHi was double now str11
+DrugOverdoseMortalityRateHi was forced to string; some loss of information
+DF was double now str11
+DF was forced to string; some loss of information
+DG was double now str11
+DG was forced to string; some loss of information
+DrugOverdoseMortalityRatewh was double now str11
+DrugOverdoseMortalityRatewh was forced to string; some loss of information
+DI was double now str11
+DI was forced to string; some loss of information
+DJ was double now str11
+DJ was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MotorVehicleMortalityRate was double now str11
+MotorVehicleMortalityRate was forced to string; some loss of information
+DM was double now str11
+DM was forced to string; some loss of information
+DN was double now str11
+DN was forced to string; some loss of information
+MVMortalityRateAIAN was byte now str1
+MVMortalityRateAIAN95CI was byte now str1
+DQ was byte now str1
+MVMortalityRateAsian was double now str11
+MVMortalityRateAsian was forced to string; some loss of information
+MVMortalityRateAsian95CI was double now str11
+MVMortalityRateAsian95CI was forced to string; some loss of information
+DT was double now str11
+DT was forced to string; some loss of information
+MVMortalityRateBlack was double now str11
+MVMortalityRateBlack was forced to string; some loss of information
+MVMortalityRateBlack95CI was double now str11
+MVMortalityRateBlack95CI was forced to string; some loss of information
+DW was double now str11
+DW was forced to string; some loss of information
+MVMortalityRateHispanic was double now str11
+MVMortalityRateHispanic was forced to string; some loss of information
+MVMortalityRateHispanic95 was double now str11
+MVMortalityRateHispanic95 was forced to string; some loss of information
+DZ was double now str11
+DZ was forced to string; some loss of information
+MVMortalityRatewhite was double now str11
+MVMortalityRatewhite was forced to string; some loss of information
+MVMortalityRatewhite95CI was double now str11
+MVMortalityRatewhite95CI was forced to string; some loss of information
+EC was double now str11
+EC was forced to string; some loss of information
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+EE was double now str11
+EE was forced to string; some loss of information
+EF was double now str11
+EF was forced to string; some loss of information
+Uninsured was long now str6
+EH was double now str11
+EH was forced to string; some loss of information
+EI was double now str11
+EI was forced to string; some loss of information
+EJ was double now str11
+EJ was forced to string; some loss of information
+EK was long now str5
+EL was double now str11
+EL was forced to string; some loss of information
+EM was double now str11
+EM was forced to string; some loss of information
+EN was double now str11
+EN was forced to string; some loss of information
+OtherPrimaryCareProviderRate was double now str9
+OtherPrimaryCareProviderRate was forced to string; some loss of information
+OtherPrimaryCareProviderRati already string; no replace
+CohortSize was long now str5
+HighSchoolGraduationRate was double now str11
+HighSchoolGraduationRate was forced to string; some loss of information
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+ET was double now str11
+ET was forced to string; some loss of information
+EU was double now str11
+EU was forced to string; some loss of information
+AverageGradePerformance was double now str11
+AverageGradePerformanceAsian was double now str11
+AverageGradePerformanceBlack was double now str11
+AverageGradePerformanceHispa was double now str11
+AverageGradePerformancewhite was double now str11
+FA was double now str11
+FB was double now str11
+FC was double now str11
+FD was double now str11
+FE was double now str11
+Segregationindex was double now str11
+Spendingperpupil was double now str11
+Spendingperpupil was forced to string; some loss of information
+Schoolfunding was double now str12
+Schoolfunding was forced to string; some loss of information
+WomensMedianEarnings was long now str5
+MensMedianEarnings was long now str5
+GenderPayGap was double now str11
+GenderPayGap was forced to string; some loss of information
+FL was double now str11
+FM was double now str11
+FM was forced to string; some loss of information
+MedianHouseholdIncome was long now str6
+FO was double now str11
+FO was forced to string; some loss of information
+FP was double now str11
+FP was forced to string; some loss of information
+HouseholdIncomeAIAN was long now str6
+HouseholdIncomeAIAN95CI was double now str11
+HouseholdIncomeAIAN95CI was forced to string; some loss of information
+FS was double now str11
+FS was forced to string; some loss of information
+HouseholdIncomeAsian was long now str6
+HouseholdIncomeAsian95CI was double now str11
+HouseholdIncomeAsian95CI was forced to string; some loss of information
+FV was double now str11
+FV was forced to string; some loss of information
+HouseholdIncomeBlack was long now str6
+HouseholdIncomeBlack95CI was double now str11
+HouseholdIncomeBlack95CI was forced to string; some loss of information
+FY was double now str11
+FY was forced to string; some loss of information
+HouseholdIncomeHispanic was long now str6
+HouseholdIncomeHispanic95 was double now str11
+HouseholdIncomeHispanic95 was forced to string; some loss of information
+GB was double now str11
+GB was forced to string; some loss of information
+HouseholdIncomewhite was long now str6
+HouseholdIncomewhite95CI was double now str11
+HouseholdIncomewhite95CI was forced to string; some loss of information
+GE was double now str11
+GE was forced to string; some loss of information
+EnrolledinFreeorReducedLu was double now str11
+EnrolledinFreeorReducedLu was forced to string; some loss of information
+GG was double now str11
+GG was forced to string; some loss of information
+SegregationIndex was double now str11
+SegregationIndex was forced to string; some loss of information
+householdincomerequiredfor was double now str11
+householdincomerequiredfor was forced to string; some loss of information
+childcarecenters was int now str3
+CountyValue was double now str11
+CountyValue was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+GM was double now str11
+GM was forced to string; some loss of information
+GN was double now str11
+GN was forced to string; some loss of information
+HomicideRateAIAN was byte now str1
+HomicideRateAIAN95CILo was byte now str1
+HomicideRateAIAN95CIHi was byte now str1
+HomicideRateAsian was byte now str1
+HomicideRateAsian95CIL was byte now str1
+HomicideRateAsian95CIH was byte now str1
+HomicideRateBlack was double now str11
+HomicideRateBlack was forced to string; some loss of information
+HomicideRateBlack95CIL was double now str11
+HomicideRateBlack95CIL was forced to string; some loss of information
+HomicideRateBlack95CIH was double now str11
+HomicideRateBlack95CIH was forced to string; some loss of information
+HomicideRateHispanic was double now str11
+HomicideRateHispanic was forced to string; some loss of information
+HomicideRateHispanic95CI was double now str11
+HomicideRateHispanic95CI was forced to string; some loss of information
+GZ was double now str11
+GZ was forced to string; some loss of information
+HomicideRatewhite was double now str11
+HomicideRatewhite was forced to string; some loss of information
+HomicideRatewhite95CIL was double now str11
+HomicideRatewhite95CIL was forced to string; some loss of information
+HomicideRatewhite95CIH was double now str11
+HomicideRatewhite95CIH was forced to string; some loss of information
+HD was int now str4
+SuicideRateAgeAdjusted was double now str11
+SuicideRateAgeAdjusted was forced to string; some loss of information
+HF was double now str11
+HF was forced to string; some loss of information
+HG was double now str11
+HG was forced to string; some loss of information
+CrudeRate was double now str11
+CrudeRate was forced to string; some loss of information
+SuicideRateAIAN was byte now str1
+SuicideRateAIAN95CILow was byte now str1
+SuicideRateAIAN95CIHig was byte now str1
+SuicideRateAsian was double now str11
+SuicideRateAsian was forced to string; some loss of information
+SuicideRateAsian95CILo was double now str11
+SuicideRateAsian95CILo was forced to string; some loss of information
+SuicideRateAsian95CIHi was double now str11
+SuicideRateAsian95CIHi was forced to string; some loss of information
+SuicideRateBlack was double now str11
+SuicideRateBlack was forced to string; some loss of information
+SuicideRateBlack95CILo was double now str11
+SuicideRateBlack95CILo was forced to string; some loss of information
+SuicideRateBlack95CIHi was double now str11
+SuicideRateBlack95CIHi was forced to string; some loss of information
+SuicideRateHispanic was double now str11
+SuicideRateHispanic was forced to string; some loss of information
+SuicideRateHispanic95CI was double now str11
+SuicideRateHispanic95CI was forced to string; some loss of information
+HT was double now str11
+HT was forced to string; some loss of information
+SuicideRatewhite was double now str11
+SuicideRatewhite was forced to string; some loss of information
+SuicideRatewhite95CILo was double now str11
+SuicideRatewhite95CILo was forced to string; some loss of information
+SuicideRatewhite95CIHi was double now str11
+SuicideRatewhite95CIHi was forced to string; some loss of information
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+HZ was double now str11
+HZ was forced to string; some loss of information
+IA was double now str11
+IA was forced to string; some loss of information
+FirearmFatalitiesRateAIAN was byte now str1
+FirearmFatalitiesRateAIAN9 was byte now str1
+ID was byte now str1
+FirearmFatalitiesRateAsian was double now str11
+FirearmFatalitiesRateAsian was forced to string; some loss of information
+IF was double now str11
+IF was forced to string; some loss of information
+IG was double now str9
+IG was forced to string; some loss of information
+FirearmFatalitiesRateBlack was double now str11
+FirearmFatalitiesRateBlack was forced to string; some loss of information
+II was double now str11
+II was forced to string; some loss of information
+IJ was double now str11
+IJ was forced to string; some loss of information
+FirearmFatalitiesRateHispani was double now str11
+FirearmFatalitiesRateHispani was forced to string; some loss of information
+IL was double now str11
+IL was forced to string; some loss of information
+IM was double now str11
+IM was forced to string; some loss of information
+FirearmFatalitiesRatewhite was double now str11
+FirearmFatalitiesRatewhite was forced to string; some loss of information
+IO was double now str11
+IO was forced to string; some loss of information
+IP was double now str11
+IP was forced to string; some loss of information
+NonPetitionedCases was byte now str1
+PetitionedCases was byte now str1
+Denominator was byte now str1
+JuvenileArrestRate was byte now str1
+TrafficVolume was double now str11
+TrafficVolume was forced to string; some loss of information
+Homeowners was long now str7
+IW was double now str11
+IW was forced to string; some loss of information
+IX was double now str11
+IX was forced to string; some loss of information
+IY was double now str11
+IY was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+SevereHousingCostBurden was double now str11
+SevereHousingCostBurden was forced to string; some loss of information
+JB was double now str11
+JB was forced to string; some loss of information
+JC was double now str11
+JC was forced to string; some loss of information
+BroadbandAccess was double now str11
+BroadbandAccess was forced to string; some loss of information
+Numerator was long now str7
+JF was double now str11
+JF was forced to string; some loss of information
+JG was double now str11
+JG was forced to string; some loss of information
+Population was long now str7
+LessThan18YearsofAge was double now str11
+LessThan18YearsofAge was forced to string; some loss of information
+JJ was double now str11
+JJ was forced to string; some loss of information
+Black was long now str6
+JL was double now str11
+JL was forced to string; some loss of information
+AmericanIndianAlaskaNativ was int now str5
+JN was double now str11
+Asian was long now str5
+JP was double now str11
+JP was forced to string; some loss of information
+NativeHawaiianOtherPacific was int now str4
+JR was double now str11
+Hispanic was long now str6
+JT was double now str11
+JT was forced to string; some loss of information
+NonHispanicwhite was long now str7
+JV was double now str11
+JV was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+JX was double now str11
+JX was forced to string; some loss of information
+JY was double now str11
+JY was forced to string; some loss of information
+JZ was double now str11
+JZ was forced to string; some loss of information
+female was double now str11
+female was forced to string; some loss of information
+ruralresidents was long now str7
+rural was double now str11
+rural was forced to string; some loss of information
+Year already string; no replace
+(variable AgeAdjustedMortalityAIAN95 was str10, now str11 to accommodate using data's values)
+(variable AQ was str4, now str11 to accommodate using data's values)
+(variable BJ was str4, now str11 to accommodate using data's values)
+(variable CX was str1, now str11 to accommodate using data's values)
+(variable EK was str5, now str11 to accommodate using data's values)
+(variable BP was str1, now str11 to accommodate using data's values)
+(variable CJ was str4, now str11 to accommodate using data's values)
+(variable CK was str4, now str11 to accommodate using data's values)
+(variable AW was str1, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2023 county health rankings kentucky data - v2.xlsx
+FIPS          AgeAdjuste~N  ChildMorta~k  InfantMo~ite  DrugOverd~As  CohortSize    EU            HomicideRa~o  SuicideRat~k  FirearmF~ite  JuvenileAr~e  NativeHawa~f
+State         AgeAdjust~95  ChildMor~k95  InfantMo~e95  CX            HighSchool~e  HouseholdI~N  HomicideRa~i  Suic~k95CILo  HS            VoterTurnout  JQ
+County        AB            BA            BZ            CY            Disconnect~h  Househ~N95CI  HomicideRa~n  Suic~k95CIHi  HT            CensusPart~n  Hispanic
+LifeExpect~y  AgeAdjuste~n  ChildMorta~c  FrequentPh~s  DrugOverdo~l  DY            EX            Homic~n95CIL  SuicideRat~c  MotorVehic~s  TrafficVol~e  JS
+CILow         AgeAdjust~n9  BC            CB            DA            DZ            HouseholdI~n  Homic~n95CIH  SuicideRat~I  MotorVehic~e  Homeowners    NonHispani~e
+CIHigh        AE            BD            CC            DB            AverageGr~ce  Househ~n95CI  HomicideRa~k  GX            HW            IV            JU
+LifeExpect~N  AgeAdjuste~k  ChildMor~ite  FrequentMe~s  DrugOverdo~i  AverageGra~n  FA            Homic~k95CIL  SuicideRat~e  HX            IW            NotProfici~h
+LifeEx~N95CI  AgeAdjust~k9  ChildMor~e95  CE            DD            AverageGra~k  HouseholdI~k  Homic~k95CIH  Suic~e95CILo  MVMortalit~N  IX            JW
+I             AH            BG            CF            DE            AverageGra~a  Househ~k95CI  HomicideRa~c  Suic~e95CIHi  MVMort~N95CI  Households~u  JX
+LifeExpect~n  AgeAdjuste~c  BH            Adultswith~s  DrugOverdo~h  AverageGr~te  FD            HomicideRa~I  FirearmFat~s  IA            IZ            JY
+LifeEx~n95CI  AJ            InfantMo~ate  CH            DG            EF            HouseholdI~c  GD            FirearmF~ate  MVMortalit~n  JA            Female
+L             AK            BJ            CI            DH            EG            Household~95  Homicide~ite  HD            MVMort~n95CI  JB            RuralResid~s
+LifeExpect~k  AgeAdjus~ite  BK            HIVCases      Insufficie~p  EH            FG            Homic~e95CIL  HE            ID            Households~e  Rural
+LifeEx~k95CI  AgeAdjust~e9  InfantMort~N  HIVPrevale~e  DJ            EI            HouseholdI~e  Homic~e95CIH  FirearmFat~N  MVMortalit~k  JD            Year
+O             AN            InfantMo~N95  FoodInsecure  DK            EJ            Househ~e95CI  GH            FirearmFat~9  MVMort~k95CI  JE
+LifeExpect~c  AO            BN            CM            UninsuredA~s  Segregatio~x  FJ            SuicideRat~d  HH            IG            JF
+LifeExpe~95C  ChildMor~ate  InfantMort~n  LimitedAcc~d  DM            Spendingpe~l  Enrolledin~u  GJ            FirearmFat~n  MVMortalit~c  Population
+R             AQ            InfantMo~n95  CO            DN            SchoolFund~y  FL            GK            HJ            MVMortali~95  Lessthan18~e
+LifeExpect~e  AR            BQ            DrugOverd~hs  DO            WomensMedi~s  HouseholdI~r  CrudeRate     HK            IJ            JI
+LifeEx~e95CI  ChildMorta~N  InfantMort~k  DrugOverdo~e  UninsuredC~n  MensMedian~s  ChildCareC~s  SuicideRat~N  FirearmFat~k  MVMortalit~e  Black
+U             ChildMor~N95  InfantMo~k95  CR            DQ            GenderPayGap  ChildCareC~i  SuicideRat~w  HM            MVMort~e95CI  JK
+Deaths        AU            BT            CS            DR            EQ            HomicideRate  SuicideRat~g  HN            IM            AmericanIn~i
+AgeAdjus~ate  ChildMorta~n  InfantMort~c  DrugOverdo~I  DS            ER            FQ            SuicideRat~n  FirearmFat~i  NonPetitio~s  JM
+X             ChildMor~n95  BV            CU            OtherPrima~e  MedianHous~e  FR            Suic~n95CILo  HP            Petitioned~s  Asian
+Y             AX            BW            CV            OtherPrima~i  ET            HomicideRa~N  Suic~n95CIHi  HQ            Denominator   JO
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyAIAN was double now str11
+LifeExpectancyAIAN was forced to string; some loss of information
+LifeExpectancyAIAN95CI was double now str11
+LifeExpectancyAIAN95CI was forced to string; some loss of information
+I was double now str11
+I was forced to string; some loss of information
+LifeExpectancyAsian was double now str11
+LifeExpectancyAsian was forced to string; some loss of information
+LifeExpectancyAsian95CI was double now str11
+LifeExpectancyAsian95CI was forced to string; some loss of information
+L was double now str11
+L was forced to string; some loss of information
+LifeExpectancyBlack was double now str11
+LifeExpectancyBlack was forced to string; some loss of information
+LifeExpectancyBlack95CI was double now str11
+LifeExpectancyBlack95CI was forced to string; some loss of information
+O was double now str11
+O was forced to string; some loss of information
+LifeExpectancyHispanic was double now str11
+LifeExpectancyHispanic was forced to string; some loss of information
+LifeExpectancyHispanic95C was double now str11
+LifeExpectancyHispanic95C was forced to string; some loss of information
+R was double now str11
+R was forced to string; some loss of information
+LifeExpectancyWhite was double now str11
+LifeExpectancyWhite was forced to string; some loss of information
+LifeExpectancyWhite95CI was double now str11
+LifeExpectancyWhite95CI was forced to string; some loss of information
+U was double now str11
+U was forced to string; some loss of information
+Deaths was long now str5
+AgeAdjustedDeathRate was double now str11
+AgeAdjustedDeathRate was forced to string; some loss of information
+X was double now str11
+X was forced to string; some loss of information
+Y was double now str11
+Y was forced to string; some loss of information
+AgeAdjustedMortalityAIAN was double now str11
+AgeAdjustedMortalityAIAN was forced to string; some loss of information
+AgeAdjustedMortalityAIAN95 was double now str10
+AgeAdjustedMortalityAIAN95 was forced to string; some loss of information
+AB was double now str11
+AB was forced to string; some loss of information
+AgeAdjustedMortalityAsian was double now str11
+AgeAdjustedMortalityAsian was forced to string; some loss of information
+AgeAdjustedMortalityAsian9 was double now str11
+AgeAdjustedMortalityAsian9 was forced to string; some loss of information
+AE was double now str11
+AE was forced to string; some loss of information
+AgeAdjustedMortalityBlack was double now str11
+AgeAdjustedMortalityBlack was forced to string; some loss of information
+AgeAdjustedMortalityBlack9 was double now str11
+AgeAdjustedMortalityBlack9 was forced to string; some loss of information
+AH was double now str11
+AH was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AJ was double now str11
+AJ was forced to string; some loss of information
+AK was double now str11
+AK was forced to string; some loss of information
+AgeAdjustedMortalityWhite was double now str11
+AgeAdjustedMortalityWhite was forced to string; some loss of information
+AgeAdjustedMortalityWhite9 was double now str11
+AgeAdjustedMortalityWhite9 was forced to string; some loss of information
+AN was double now str11
+AN was forced to string; some loss of information
+AO was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+AQ was double now str11
+AQ was forced to string; some loss of information
+AR was double now str11
+AR was forced to string; some loss of information
+ChildMortalityRateAIAN was byte now str1
+ChildMortalityRateAIAN95 was byte now str1
+AU was byte now str1
+ChildMortalityRateAsian was double now str11
+ChildMortalityRateAsian was forced to string; some loss of information
+ChildMortalityRateAsian95 was double now str11
+ChildMortalityRateAsian95 was forced to string; some loss of information
+AX was double now str11
+AX was forced to string; some loss of information
+ChildMortalityRateBlack was double now str11
+ChildMortalityRateBlack was forced to string; some loss of information
+ChildMortalityRateBlack95 was double now str11
+ChildMortalityRateBlack95 was forced to string; some loss of information
+BA was double now str11
+BA was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+BC was double now str11
+BC was forced to string; some loss of information
+BD was double now str11
+BD was forced to string; some loss of information
+ChildMortalityRateWhite was double now str11
+ChildMortalityRateWhite was forced to string; some loss of information
+ChildMortalityRateWhite95 was double now str11
+ChildMortalityRateWhite95 was forced to string; some loss of information
+BG was double now str11
+BG was forced to string; some loss of information
+BH was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+BJ was double now str11
+BJ was forced to string; some loss of information
+BK was double now str11
+BK was forced to string; some loss of information
+InfantMortalityRateAIAN was byte now str1
+InfantMortalityRateAIAN95 was byte now str1
+BN was byte now str1
+InfantMortalityRateAsian was double now str11
+InfantMortalityRateAsian was forced to string; some loss of information
+InfantMortalityRateAsian95 was double now str11
+InfantMortalityRateAsian95 was forced to string; some loss of information
+BQ was double now str11
+BQ was forced to string; some loss of information
+InfantMortalityRateBlack was double now str11
+InfantMortalityRateBlack was forced to string; some loss of information
+InfantMortalityRateBlack95 was double now str11
+InfantMortalityRateBlack95 was forced to string; some loss of information
+BT was double now str11
+BT was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+BV was double now str11
+BV was forced to string; some loss of information
+BW was double now str11
+BW was forced to string; some loss of information
+InfantMortalityRateWhite was double now str11
+InfantMortalityRateWhite was forced to string; some loss of information
+InfantMortalityRateWhite95 was double now str11
+InfantMortalityRateWhite95 was forced to string; some loss of information
+BZ was double now str11
+BZ was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+CC was double now str11
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+CE was double now str11
+CE was forced to string; some loss of information
+CF was double now str10
+CF was forced to string; some loss of information
+AdultswithDiabetes was double now str4
+CH was double now str4
+CI was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+CM was double now str4
+LimitedAccesstoHealthyFood was double now str11
+LimitedAccesstoHealthyFood was forced to string; some loss of information
+CO was double now str11
+CO was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+CR was double now str11
+CR was forced to string; some loss of information
+CS was double now str11
+CS was forced to string; some loss of information
+DrugOverdoseMortalityRateAI was byte now str1
+CU was byte now str1
+CV was byte now str1
+DrugOverdoseMortalityRateAs was double now str11
+DrugOverdoseMortalityRateAs was forced to string; some loss of information
+CX was double now str11
+CX was forced to string; some loss of information
+CY was double now str11
+CY was forced to string; some loss of information
+DrugOverdoseMortalityRateBl was double now str11
+DrugOverdoseMortalityRateBl was forced to string; some loss of information
+DA was double now str11
+DA was forced to string; some loss of information
+DB was double now str11
+DB was forced to string; some loss of information
+DrugOverdoseMortalityRateHi was double now str11
+DrugOverdoseMortalityRateHi was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+DE was double now str11
+DE was forced to string; some loss of information
+DrugOverdoseMortalityRateWh was double now str11
+DrugOverdoseMortalityRateWh was forced to string; some loss of information
+DG was double now str11
+DG was forced to string; some loss of information
+DH was double now str11
+DH was forced to string; some loss of information
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+DJ was double now str11
+DJ was forced to string; some loss of information
+DK was double now str11
+DK was forced to string; some loss of information
+UninsuredAdults was long now str6
+DM was double now str11
+DM was forced to string; some loss of information
+DN was double now str11
+DN was forced to string; some loss of information
+DO was double now str11
+DO was forced to string; some loss of information
+UninsuredChildren was long now str5
+DQ was double now str11
+DQ was forced to string; some loss of information
+DR was double now str11
+DR was forced to string; some loss of information
+DS was double now str11
+DS was forced to string; some loss of information
+OtherPrimaryCareProviderRate was double now str9
+OtherPrimaryCareProviderRate was forced to string; some loss of information
+OtherPrimaryCareProviderRati already string; no replace
+CohortSize was long now str5
+HighSchoolGraduationRate was double now str11
+HighSchoolGraduationRate was forced to string; some loss of information
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+DY was double now str11
+DY was forced to string; some loss of information
+DZ was double now str11
+DZ was forced to string; some loss of information
+AverageGradePerformance was double now str11
+AverageGradePerformanceAsian was double now str11
+AverageGradePerformanceBlack was double now str11
+AverageGradePerformanceHispa was double now str11
+AverageGradePerformanceWhite was double now str11
+EF was double now str11
+EG was double now str11
+EH was double now str11
+EI was double now str11
+EJ was double now str11
+SegregationIndex was double now str11
+SpendingperPupil was double now str11
+SpendingperPupil was forced to string; some loss of information
+SchoolFundingAdequacy was double now str12
+SchoolFundingAdequacy was forced to string; some loss of information
+WomensMedianEarnings was long now str5
+MensMedianEarnings was long now str5
+GenderPayGap was double now str11
+GenderPayGap was forced to string; some loss of information
+EQ was double now str11
+ER was double now str11
+ER was forced to string; some loss of information
+MedianHouseholdIncome was long now str6
+ET was double now str11
+ET was forced to string; some loss of information
+EU was double now str11
+EU was forced to string; some loss of information
+HouseholdIncomeAIAN was long now str6
+HouseholdIncomeAIAN95CI was double now str11
+HouseholdIncomeAIAN95CI was forced to string; some loss of information
+EX was double now str11
+EX was forced to string; some loss of information
+HouseholdIncomeAsian was long now str6
+HouseholdIncomeAsian95CI was double now str11
+HouseholdIncomeAsian95CI was forced to string; some loss of information
+FA was double now str11
+FA was forced to string; some loss of information
+HouseholdIncomeBlack was long now str6
+HouseholdIncomeBlack95CI was double now str11
+HouseholdIncomeBlack95CI was forced to string; some loss of information
+FD was double now str11
+FD was forced to string; some loss of information
+HouseholdIncomeHispanic was long now str6
+HouseholdIncomeHispanic95 was double now str11
+HouseholdIncomeHispanic95 was forced to string; some loss of information
+FG was double now str11
+FG was forced to string; some loss of information
+HouseholdIncomeWhite was long now str6
+HouseholdIncomeWhite95CI was double now str11
+HouseholdIncomeWhite95CI was forced to string; some loss of information
+FJ was double now str11
+FJ was forced to string; some loss of information
+EnrolledinFreeorReducedLu was double now str11
+EnrolledinFreeorReducedLu was forced to string; some loss of information
+FL was double now str11
+FL was forced to string; some loss of information
+HouseholdIncomeRequiredfor was double now str11
+HouseholdIncomeRequiredfor was forced to string; some loss of information
+ChildCareCenters was int now str3
+ChildCareCentersper1000Chi was double now str11
+ChildCareCentersper1000Chi was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+FQ was double now str11
+FQ was forced to string; some loss of information
+FR was double now str11
+FR was forced to string; some loss of information
+HomicideRateAIAN was byte now str1
+HomicideRateAIAN95CILo was byte now str1
+HomicideRateAIAN95CIHi was byte now str1
+HomicideRateAsian was byte now str1
+HomicideRateAsian95CIL was byte now str1
+HomicideRateAsian95CIH was byte now str1
+HomicideRateBlack was double now str11
+HomicideRateBlack was forced to string; some loss of information
+HomicideRateBlack95CIL was double now str11
+HomicideRateBlack95CIL was forced to string; some loss of information
+HomicideRateBlack95CIH was double now str11
+HomicideRateBlack95CIH was forced to string; some loss of information
+HomicideRateHispanic was double now str11
+HomicideRateHispanic was forced to string; some loss of information
+HomicideRateHispanic95CI was double now str11
+HomicideRateHispanic95CI was forced to string; some loss of information
+GD was double now str11
+GD was forced to string; some loss of information
+HomicideRateWhite was double now str11
+HomicideRateWhite was forced to string; some loss of information
+HomicideRateWhite95CIL was double now str11
+HomicideRateWhite95CIL was forced to string; some loss of information
+HomicideRateWhite95CIH was double now str11
+HomicideRateWhite95CIH was forced to string; some loss of information
+GH was int now str4
+SuicideRateAgeAdjusted was double now str11
+SuicideRateAgeAdjusted was forced to string; some loss of information
+GJ was double now str11
+GJ was forced to string; some loss of information
+GK was double now str11
+GK was forced to string; some loss of information
+CrudeRate was double now str11
+CrudeRate was forced to string; some loss of information
+SuicideRateAIAN was byte now str1
+SuicideRateAIAN95CILow was byte now str1
+SuicideRateAIAN95CIHig was byte now str1
+SuicideRateAsian was double now str11
+SuicideRateAsian was forced to string; some loss of information
+SuicideRateAsian95CILo was double now str11
+SuicideRateAsian95CILo was forced to string; some loss of information
+SuicideRateAsian95CIHi was double now str11
+SuicideRateAsian95CIHi was forced to string; some loss of information
+SuicideRateBlack was double now str11
+SuicideRateBlack was forced to string; some loss of information
+SuicideRateBlack95CILo was double now str11
+SuicideRateBlack95CILo was forced to string; some loss of information
+SuicideRateBlack95CIHi was double now str11
+SuicideRateBlack95CIHi was forced to string; some loss of information
+SuicideRateHispanic was double now str11
+SuicideRateHispanic was forced to string; some loss of information
+SuicideRateHispanic95CI was double now str11
+SuicideRateHispanic95CI was forced to string; some loss of information
+GX was double now str11
+GX was forced to string; some loss of information
+SuicideRateWhite was double now str11
+SuicideRateWhite was forced to string; some loss of information
+SuicideRateWhite95CILo was double now str11
+SuicideRateWhite95CILo was forced to string; some loss of information
+SuicideRateWhite95CIHi was double now str11
+SuicideRateWhite95CIHi was forced to string; some loss of information
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+HD was double now str11
+HD was forced to string; some loss of information
+HE was double now str11
+HE was forced to string; some loss of information
+FirearmFatalitiesRateAIAN was byte now str1
+FirearmFatalitiesRateAIAN9 was byte now str1
+HH was byte now str1
+FirearmFatalitiesRateAsian was double now str11
+FirearmFatalitiesRateAsian was forced to string; some loss of information
+HJ was double now str11
+HJ was forced to string; some loss of information
+HK was double now str9
+HK was forced to string; some loss of information
+FirearmFatalitiesRateBlack was double now str11
+FirearmFatalitiesRateBlack was forced to string; some loss of information
+HM was double now str11
+HM was forced to string; some loss of information
+HN was double now str11
+HN was forced to string; some loss of information
+FirearmFatalitiesRateHispani was double now str11
+FirearmFatalitiesRateHispani was forced to string; some loss of information
+HP was double now str11
+HP was forced to string; some loss of information
+HQ was double now str11
+HQ was forced to string; some loss of information
+FirearmFatalitiesRateWhite was double now str11
+FirearmFatalitiesRateWhite was forced to string; some loss of information
+HS was double now str11
+HS was forced to string; some loss of information
+HT was double now str11
+HT was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MotorVehicleMortalityRate was double now str11
+MotorVehicleMortalityRate was forced to string; some loss of information
+HW was double now str11
+HW was forced to string; some loss of information
+HX was double now str11
+HX was forced to string; some loss of information
+MVMortalityRateAIAN was byte now str1
+MVMortalityRateAIAN95CI was byte now str1
+IA was byte now str1
+MVMortalityRateAsian was double now str11
+MVMortalityRateAsian was forced to string; some loss of information
+MVMortalityRateAsian95CI was double now str11
+MVMortalityRateAsian95CI was forced to string; some loss of information
+ID was double now str11
+ID was forced to string; some loss of information
+MVMortalityRateBlack was double now str11
+MVMortalityRateBlack was forced to string; some loss of information
+MVMortalityRateBlack95CI was double now str11
+MVMortalityRateBlack95CI was forced to string; some loss of information
+IG was double now str11
+IG was forced to string; some loss of information
+MVMortalityRateHispanic was double now str11
+MVMortalityRateHispanic was forced to string; some loss of information
+MVMortalityRateHispanic95 was double now str11
+MVMortalityRateHispanic95 was forced to string; some loss of information
+IJ was double now str11
+IJ was forced to string; some loss of information
+MVMortalityRateWhite was double now str11
+MVMortalityRateWhite was forced to string; some loss of information
+MVMortalityRateWhite95CI was double now str11
+MVMortalityRateWhite95CI was forced to string; some loss of information
+IM was double now str11
+IM was forced to string; some loss of information
+NonPetitionedCases was byte now str1
+PetitionedCases was byte now str1
+Denominator was byte now str1
+JuvenileArrestRate was byte now str1
+VoterTurnout was double now str11
+VoterTurnout was forced to string; some loss of information
+CensusParticipation was double now str4
+TrafficVolume was double now str11
+TrafficVolume was forced to string; some loss of information
+Homeowners was long now str7
+IV was double now str11
+IV was forced to string; some loss of information
+IW was double now str11
+IW was forced to string; some loss of information
+IX was double now str11
+IX was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+IZ was double now str11
+IZ was forced to string; some loss of information
+JA was double now str11
+JA was forced to string; some loss of information
+JB was double now str11
+JB was forced to string; some loss of information
+HouseholdswithBroadbandAcce was double now str11
+HouseholdswithBroadbandAcce was forced to string; some loss of information
+JD was long now str7
+JE was double now str11
+JE was forced to string; some loss of information
+JF was double now str11
+JF was forced to string; some loss of information
+Population was long now str7
+Lessthan18YearsofAge was double now str11
+Lessthan18YearsofAge was forced to string; some loss of information
+JI was double now str11
+JI was forced to string; some loss of information
+Black was long now str6
+JK was double now str11
+JK was forced to string; some loss of information
+AmericanIndianorAlaskaNati was int now str5
+JM was double now str11
+Asian was long now str5
+JO was double now str11
+JO was forced to string; some loss of information
+NativeHawaiianorOtherPacif was int now str4
+JQ was double now str11
+Hispanic was long now str6
+JS was double now str11
+JS was forced to string; some loss of information
+NonHispanicWhite was long now str7
+JU was double now str11
+JU was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+JW was double now str11
+JW was forced to string; some loss of information
+JX was double now str11
+JX was forced to string; some loss of information
+JY was double now str11
+JY was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+RuralResidents was long now str7
+Rural was double now str11
+Rural was forced to string; some loss of information
+Year already string; no replace
+(variable AgeAdjustedMortalityAIAN95 was str10, now str11 to accommodate using data's values)
+(variable CH was str4, now str11 to accommodate using data's values)
+(variable CU was str1, now str11 to accommodate using data's values)
+(variable IA was str1, now str11 to accommodate using data's values)
+(variable AO was str4, now str11 to accommodate using data's values)
+(variable AU was str1, now str11 to accommodate using data's values)
+(variable BH was str4, now str11 to accommodate using data's values)
+(variable BN was str1, now str4 to accommodate using data's values)
+(variable CF was str10, now str11 to accommodate using data's values)
+(variable CM was str4, now str11 to accommodate using data's values)
+(variable CV was str1, now str11 to accommodate using data's values)
+(variable HK was str9, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: 2024 county health rankings kentucky data - v2.xlsx
+FIPS          AD            BG            CJ            DM            UninsuredA~s  SchoolFund~y  HomicideRate  SuicideRa~ce  JB            KE            LH
+State         AE            ChildMorta~n  CK            DrugOverdo~s  EQ            WomensMedi~s  GW            HZ            JC            KF            LI
+County        AgeAdjuste~c  BI            CL            DrugOverdo~e  ER            MensMedian~s  GX            IA            JD            KG            LJ
+LifeExpect~y  AG            BJ            CM            DP            ES            GenderPayGap  Homicide~rac  SuicideRat~N  JE            KH            Population
+CILow         AH            BK            CN            DQ            UninsuredC~n  FW            GZ            IC            JF            KI            Lessthan18~e
+CIHigh        AgeAdjuste~p  BL            CO            DrugOverdo~i  EU            FX            HA            ID            JG            KJ            LM
+LifeExpect~r  AJ            BM            CP            DS            EV            MedianHous~e  HomicideRa~N  SuicideRat~n  JH            KK            Black
+H             AK            BN            CQ            DT            EW            FZ            HC            IF            JI            KL            LO
+I             AL            BO            CR            DrugOverdo~o  OtherPrima~e  GA            HD            IG            JJ            KM            AmericanIn~i
+LifeExpect~I  AM            BP            CS            DV            OtherPrima~i  HouseholdI~N  HomicideRa~a  SuicideRat~k  JK            KN            LQ
+K             AN            BQ            CT            DW            CohortSize    Househ~N95CI  HF            II            JL            KO            Asian
+L             AO            BR            CU            DX            HighSchool~e  GD            HG            IJ            JM            KP            LS
+LifeExpect~s  AP            BS            CV            DY            Disconnect~h  HouseholdI~n  Homicide~lac  SuicideRat~v  JN            KQ            NativeHawa~f
+N             AQ            BT            CW            DZ            FC            Househ~n95CI  HI            IL            JO            NonPetitio~s  LU
+O             AR            BU            CX            EA            FD            GG            HJ            IM            JP            Petitioned~s  Hispanic
+LifeExpect~l  AS            BV            FrequentPh~s  EB            AverageGr~ce  HouseholdI~k  HomicideRa~i  SuicideRat~a  JQ            Denominator   LW
+Q             AT            BW            CZ            EC            AverageGra~N  Househ~k95CI  HL            IO            JR            JuvenileAr~e  NonHispani~e
+R             AU            BX            DA            ED            AverageGra~n  GJ            HM            IP            MotorVehic~s  VoterTurnout  LY
+LifeExpect~a  AV            BY            FrequentMe~s  EE            AverageGra~k  HouseholdI~c  HomicideR~2r  SuicideRa~te  MotorVehic~e  CensusPart~n  NotProfici~h
+T             AW            BZ            DC            EF            AverageGra~a  Household~95  HO            IR            JU            TrafficVol~e  MA
+U             AX            InfantMort~e  DD            EG            AverageGr~te  GM            HP            IS            JV            Homeowners    MB
+LifeExpect~2  AY            CB            Adultswith~s  EH            FK            HouseholdI~e  HomicideRa~t  FirearmFa~es  MVMortalit~l  KZ            MC
+W             AZ            CC            DF            EI            FL            Househ~e95CI  HR            FirearmFat~e  JX            LA            Female
+X             BA            InfantMort~c  DG            EJ            FM            GP            HS            IV            JY            LB            RuralResid~s
+LifeExpect~h  ChildMorta~e  CE            HIVCases      EK            FN            Enrolledin~u  HT            IW            MVMortalit~c  Households~u  Rural
+Z             BC            CF            HIVPrevale~e  EL            FO            GR            SuicideRat~d  FirearmFat~i  KA            LD            Year
+AA            BD            InfantMort~a  FoodInsecure  Insufficie~p  FP            HouseholdI~r  HV            IY            KB            LE
+Deaths        ChildMorta~c  CH            DK            EN            Segregatio~x  ChildCareC~s  HW            IZ            KC            LF
+AgeAdjuste~e  BF            CI            LimitedAcc~d  EO            Spendingpe~l  ChildCareC~i  CrudeRate     FirearmFa~is  KD            Households~e
+FIPS already string; no replace
+State already string; no replace
+County already string; no replace
+LifeExpectancy was double now str11
+LifeExpectancy was forced to string; some loss of information
+CILow was double now str11
+CILow was forced to string; some loss of information
+CIHigh was double now str11
+CIHigh was forced to string; some loss of information
+LifeExpectancyHispanicallr was double now str11
+LifeExpectancyHispanicallr was forced to string; some loss of information
+H was double now str11
+H was forced to string; some loss of information
+I was double now str11
+I was forced to string; some loss of information
+LifeExpectancyNonHispanicAI was byte now str1
+K was byte now str1
+L was byte now str1
+LifeExpectancyNonHispanicAs was double now str11
+LifeExpectancyNonHispanicAs was forced to string; some loss of information
+N was double now str11
+N was forced to string; some loss of information
+O was double now str11
+O was forced to string; some loss of information
+LifeExpectancyNonHispanicBl was double now str11
+LifeExpectancyNonHispanicBl was forced to string; some loss of information
+Q was double now str11
+Q was forced to string; some loss of information
+R was double now str11
+R was forced to string; some loss of information
+LifeExpectancyNonHispanicNa was byte now str1
+T was byte now str1
+U was byte now str1
+LifeExpectancyNonHispanic2 was byte now str1
+W was byte now str1
+X was byte now str1
+LifeExpectancyNonHispanicWh was double now str11
+LifeExpectancyNonHispanicWh was forced to string; some loss of information
+Z was double now str11
+Z was forced to string; some loss of information
+AA was double now str11
+AA was forced to string; some loss of information
+Deaths was long now str5
+AgeAdjustedDeathRate was double now str11
+AgeAdjustedDeathRate was forced to string; some loss of information
+AD was double now str11
+AD was forced to string; some loss of information
+AE was double now str11
+AE was forced to string; some loss of information
+AgeAdjustedMortalityHispanic was double now str11
+AgeAdjustedMortalityHispanic was forced to string; some loss of information
+AG was double now str11
+AG was forced to string; some loss of information
+AH was double now str11
+AH was forced to string; some loss of information
+AgeAdjustedMortalityNonHisp was byte now str1
+AJ was byte now str1
+AK was byte now str1
+AL was double now str11
+AL was forced to string; some loss of information
+AM was double now str11
+AM was forced to string; some loss of information
+AN was double now str11
+AN was forced to string; some loss of information
+AO was double now str11
+AO was forced to string; some loss of information
+AP was double now str11
+AP was forced to string; some loss of information
+AQ was double now str11
+AQ was forced to string; some loss of information
+AR was byte now str1
+AS was byte now str1
+AT was byte now str1
+AU was byte now str1
+AV was byte now str1
+AW was byte now str1
+AX was double now str11
+AX was forced to string; some loss of information
+AY was double now str11
+AY was forced to string; some loss of information
+AZ was double now str11
+AZ was forced to string; some loss of information
+BA was int now str4
+ChildMortalityRate was double now str11
+ChildMortalityRate was forced to string; some loss of information
+BC was double now str11
+BC was forced to string; some loss of information
+BD was double now str11
+BD was forced to string; some loss of information
+ChildMortalityRateHispanic was double now str11
+ChildMortalityRateHispanic was forced to string; some loss of information
+BF was double now str11
+BF was forced to string; some loss of information
+BG was double now str11
+BG was forced to string; some loss of information
+ChildMortalityRateNonHispan was byte now str1
+BI was byte now str1
+BJ was byte now str1
+BK was double now str11
+BK was forced to string; some loss of information
+BL was double now str11
+BL was forced to string; some loss of information
+BM was double now str11
+BM was forced to string; some loss of information
+BN was double now str11
+BN was forced to string; some loss of information
+BO was double now str11
+BO was forced to string; some loss of information
+BP was double now str11
+BP was forced to string; some loss of information
+BQ was byte now str1
+BR was byte now str1
+BS was byte now str1
+BT was byte now str1
+BU was byte now str1
+BV was byte now str1
+BW was double now str11
+BW was forced to string; some loss of information
+BX was double now str11
+BX was forced to string; some loss of information
+BY was double now str11
+BY was forced to string; some loss of information
+BZ was int now str4
+InfantMortalityRate was double now str11
+InfantMortalityRate was forced to string; some loss of information
+CB was double now str11
+CB was forced to string; some loss of information
+CC was double now str11
+CC was forced to string; some loss of information
+InfantMortalityRateHispanic was double now str11
+InfantMortalityRateHispanic was forced to string; some loss of information
+CE was double now str11
+CE was forced to string; some loss of information
+CF was double now str11
+CF was forced to string; some loss of information
+InfantMortalityRateNonHispa was byte now str1
+CH was byte now str1
+CI was byte now str1
+CJ was byte now str1
+CK was byte now str1
+CL was byte now str1
+CM was double now str11
+CM was forced to string; some loss of information
+CN was double now str11
+CN was forced to string; some loss of information
+CO was double now str11
+CO was forced to string; some loss of information
+CP was byte now str1
+CQ was byte now str1
+CR was byte now str1
+CS was byte now str1
+CT was byte now str1
+CU was byte now str1
+CV was double now str11
+CV was forced to string; some loss of information
+CW was double now str11
+CW was forced to string; some loss of information
+CX was double now str11
+CX was forced to string; some loss of information
+FrequentPhysicalDistress was double now str11
+FrequentPhysicalDistress was forced to string; some loss of information
+CZ was double now str10
+CZ was forced to string; some loss of information
+DA was double now str11
+DA was forced to string; some loss of information
+FrequentMentalDistress was double now str11
+FrequentMentalDistress was forced to string; some loss of information
+DC was double now str11
+DC was forced to string; some loss of information
+DD was double now str11
+DD was forced to string; some loss of information
+AdultswithDiabetes was double now str4
+DF was double now str4
+DG was double now str4
+HIVCases was int now str4
+HIVPrevalenceRate was double now str5
+FoodInsecure was long now str6
+DK was double now str4
+LimitedAccesstoHealthyFood was double now str11
+LimitedAccesstoHealthyFood was forced to string; some loss of information
+DM was double now str11
+DM was forced to string; some loss of information
+DrugOverdoseDeaths was int now str4
+DrugOverdoseMortalityRate was double now str11
+DrugOverdoseMortalityRate was forced to string; some loss of information
+DP was double now str11
+DP was forced to string; some loss of information
+DQ was double now str11
+DQ was forced to string; some loss of information
+DrugOverdoseMortalityRateHi was double now str11
+DrugOverdoseMortalityRateHi was forced to string; some loss of information
+DS was double now str11
+DS was forced to string; some loss of information
+DT was double now str11
+DT was forced to string; some loss of information
+DrugOverdoseMortalityRateNo was byte now str1
+DV was byte now str1
+DW was byte now str1
+DX was byte now str1
+DY was byte now str1
+DZ was byte now str1
+EA was double now str11
+EA was forced to string; some loss of information
+EB was double now str11
+EB was forced to string; some loss of information
+EC was double now str11
+EC was forced to string; some loss of information
+ED was byte now str1
+EE was byte now str1
+EF was byte now str1
+EG was byte now str1
+EH was byte now str1
+EI was byte now str1
+EJ was double now str11
+EJ was forced to string; some loss of information
+EK was double now str11
+EK was forced to string; some loss of information
+EL was double now str11
+EL was forced to string; some loss of information
+InsufficientSleep was double now str11
+InsufficientSleep was forced to string; some loss of information
+EN was double now str11
+EN was forced to string; some loss of information
+EO was double now str11
+EO was forced to string; some loss of information
+UninsuredAdults was long now str6
+EQ was double now str11
+EQ was forced to string; some loss of information
+ER was double now str11
+ER was forced to string; some loss of information
+ES was double now str11
+ES was forced to string; some loss of information
+UninsuredChildren was long now str5
+EU was double now str11
+EU was forced to string; some loss of information
+EV was double now str11
+EV was forced to string; some loss of information
+EW was double now str11
+EW was forced to string; some loss of information
+OtherPrimaryCareProviderRate was double now str9
+OtherPrimaryCareProviderRate was forced to string; some loss of information
+OtherPrimaryCareProviderRati already string; no replace
+CohortSize was long now str5
+HighSchoolGraduationRate was double now str11
+HighSchoolGraduationRate was forced to string; some loss of information
+DisconnectedYouth was double now str11
+DisconnectedYouth was forced to string; some loss of information
+FC was double now str11
+FC was forced to string; some loss of information
+FD was double now str11
+FD was forced to string; some loss of information
+AverageGradePerformance was double now str11
+AverageGradePerformanceAIAN was byte now str1
+AverageGradePerformanceAsian was double now str11
+AverageGradePerformanceBlack was double now str11
+AverageGradePerformanceHispa was double now str11
+AverageGradePerformanceWhite was double now str11
+FK was double now str11
+FL was byte now str1
+FM was double now str11
+FN was double now str11
+FO was double now str11
+FP was double now str11
+SegregationIndex was double now str11
+SpendingperPupil was double now str11
+SpendingperPupil was forced to string; some loss of information
+SchoolFundingAdequacy was double now str12
+WomensMedianEarnings was long now str5
+MensMedianEarnings was long now str5
+GenderPayGap was double now str11
+GenderPayGap was forced to string; some loss of information
+FW was double now str11
+FX was double now str11
+FX was forced to string; some loss of information
+MedianHouseholdIncome was long now str6
+FZ was double now str11
+FZ was forced to string; some loss of information
+GA was double now str11
+GA was forced to string; some loss of information
+HouseholdIncomeAIAN was long now str6
+HouseholdIncomeAIAN95CI was double now str11
+HouseholdIncomeAIAN95CI was forced to string; some loss of information
+GD was double now str11
+GD was forced to string; some loss of information
+HouseholdIncomeAsian was long now str6
+HouseholdIncomeAsian95CI was double now str11
+HouseholdIncomeAsian95CI was forced to string; some loss of information
+GG was double now str11
+GG was forced to string; some loss of information
+HouseholdIncomeBlack was long now str6
+HouseholdIncomeBlack95CI was double now str11
+HouseholdIncomeBlack95CI was forced to string; some loss of information
+GJ was double now str11
+GJ was forced to string; some loss of information
+HouseholdIncomeHispanic was long now str6
+HouseholdIncomeHispanic95 was double now str11
+HouseholdIncomeHispanic95 was forced to string; some loss of information
+GM was double now str11
+GM was forced to string; some loss of information
+HouseholdIncomeWhite was long now str6
+HouseholdIncomeWhite95CI was double now str11
+HouseholdIncomeWhite95CI was forced to string; some loss of information
+GP was double now str11
+GP was forced to string; some loss of information
+EnrolledinFreeorReducedLu was double now str11
+EnrolledinFreeorReducedLu was forced to string; some loss of information
+GR was double now str11
+GR was forced to string; some loss of information
+HouseholdIncomeRequiredfor was double now str11
+HouseholdIncomeRequiredfor was forced to string; some loss of information
+ChildCareCenters was int now str3
+ChildCareCentersper1000Chi was double now str11
+ChildCareCentersper1000Chi was forced to string; some loss of information
+HomicideRate was double now str11
+HomicideRate was forced to string; some loss of information
+GW was double now str11
+GW was forced to string; some loss of information
+GX was double now str11
+GX was forced to string; some loss of information
+HomicideRateHispanicallrac was double now str11
+HomicideRateHispanicallrac was forced to string; some loss of information
+GZ was double now str11
+GZ was forced to string; some loss of information
+HA was double now str11
+HA was forced to string; some loss of information
+HomicideRateNonHispanicAIAN was byte now str1
+HC was byte now str1
+HD was byte now str1
+HomicideRateNonHispanicAsia was byte now str1
+HF was byte now str1
+HG was byte now str1
+HomicideRateNonHispanicBlac was double now str11
+HomicideRateNonHispanicBlac was forced to string; some loss of information
+HI was double now str11
+HI was forced to string; some loss of information
+HJ was double now str11
+HJ was forced to string; some loss of information
+HomicideRateNonHispanicNati was byte now str1
+HL was byte now str1
+HM was byte now str1
+HomicideRateNonHispanic2r was byte now str1
+HO was byte now str1
+HP was byte now str1
+HomicideRateNonHispanicWhit was double now str11
+HomicideRateNonHispanicWhit was forced to string; some loss of information
+HR was double now str11
+HR was forced to string; some loss of information
+HS was double now str11
+HS was forced to string; some loss of information
+HT was int now str4
+SuicideRateAgeAdjusted was double now str11
+SuicideRateAgeAdjusted was forced to string; some loss of information
+HV was double now str11
+HV was forced to string; some loss of information
+HW was double now str11
+HW was forced to string; some loss of information
+CrudeRate was double now str11
+CrudeRate was forced to string; some loss of information
+SuicideRateHispanicallrace was double now str11
+HZ was double now str11
+HZ was forced to string; some loss of information
+IA was double now str11
+IA was forced to string; some loss of information
+SuicideRateNonHispanicAIAN was byte now str1
+IC was byte now str1
+ID was byte now str1
+SuicideRateNonHispanicAsian was double now str11
+SuicideRateNonHispanicAsian was forced to string; some loss of information
+IF was double now str11
+IF was forced to string; some loss of information
+IG was double now str11
+IG was forced to string; some loss of information
+SuicideRateNonHispanicBlack was double now str11
+SuicideRateNonHispanicBlack was forced to string; some loss of information
+II was double now str11
+II was forced to string; some loss of information
+IJ was double now str11
+IJ was forced to string; some loss of information
+SuicideRateNonHispanicNativ was byte now str1
+IL was byte now str1
+IM was byte now str1
+SuicideRateNonHispanic2ra was byte now str1
+IO was byte now str1
+IP was byte now str1
+SuicideRateNonHispanicWhite was double now str11
+SuicideRateNonHispanicWhite was forced to string; some loss of information
+IR was double now str11
+IR was forced to string; some loss of information
+IS was double now str11
+IS was forced to string; some loss of information
+FirearmFatalities was int now str4
+FirearmFatalitiesRate was double now str11
+FirearmFatalitiesRate was forced to string; some loss of information
+IV was double now str11
+IV was forced to string; some loss of information
+IW was double now str11
+IW was forced to string; some loss of information
+FirearmFatalitiesRateHispani was double now str11
+FirearmFatalitiesRateHispani was forced to string; some loss of information
+IY was double now str11
+IY was forced to string; some loss of information
+IZ was double now str11
+IZ was forced to string; some loss of information
+FirearmFatalitiesRateNonHis was byte now str1
+JB was byte now str1
+JC was byte now str1
+JD was byte now str1
+JE was byte now str1
+JF was byte now str1
+JG was double now str11
+JG was forced to string; some loss of information
+JH was double now str11
+JH was forced to string; some loss of information
+JI was double now str11
+JI was forced to string; some loss of information
+JJ was byte now str1
+JK was byte now str1
+JL was byte now str1
+JM was byte now str1
+JN was byte now str1
+JO was byte now str1
+JP was double now str11
+JP was forced to string; some loss of information
+JQ was double now str11
+JQ was forced to string; some loss of information
+JR was double now str11
+JR was forced to string; some loss of information
+MotorVehicleDeaths was int now str4
+MotorVehicleMortalityRate was double now str11
+MotorVehicleMortalityRate was forced to string; some loss of information
+JU was double now str11
+JU was forced to string; some loss of information
+JV was double now str11
+JV was forced to string; some loss of information
+MVMortalityRateHispanicall was double now str11
+MVMortalityRateHispanicall was forced to string; some loss of information
+JX was double now str11
+JX was forced to string; some loss of information
+JY was double now str11
+JY was forced to string; some loss of information
+MVMortalityRateNonHispanic was byte now str1
+KA was byte now str1
+KB was byte now str1
+KC was double now str11
+KC was forced to string; some loss of information
+KD was double now str11
+KD was forced to string; some loss of information
+KE was double now str10
+KE was forced to string; some loss of information
+KF was double now str11
+KF was forced to string; some loss of information
+KG was double now str11
+KG was forced to string; some loss of information
+KH was double now str11
+KH was forced to string; some loss of information
+KI was byte now str1
+KJ was byte now str1
+KK was byte now str1
+KL was byte now str1
+KM was byte now str1
+KN was byte now str1
+KO was double now str11
+KO was forced to string; some loss of information
+KP was double now str11
+KP was forced to string; some loss of information
+KQ was double now str11
+KQ was forced to string; some loss of information
+NonPetitionedCases already string; no replace
+PetitionedCases already string; no replace
+Denominator was long now str6
+JuvenileArrestRate was double now str11
+JuvenileArrestRate was forced to string; some loss of information
+VoterTurnout was double now str11
+VoterTurnout was forced to string; some loss of information
+CensusParticipation was double now str4
+TrafficVolume was double now str11
+TrafficVolume was forced to string; some loss of information
+Homeowners was long now str7
+KZ was double now str11
+KZ was forced to string; some loss of information
+LA was double now str11
+LA was forced to string; some loss of information
+LB was double now str11
+LB was forced to string; some loss of information
+HouseholdswithSevereCostBu was long now str6
+LD was double now str11
+LD was forced to string; some loss of information
+LE was double now str11
+LE was forced to string; some loss of information
+LF was double now str11
+LF was forced to string; some loss of information
+HouseholdswithBroadbandAcce was double now str11
+HouseholdswithBroadbandAcce was forced to string; some loss of information
+LH was long now str7
+LI was double now str11
+LI was forced to string; some loss of information
+LJ was double now str11
+LJ was forced to string; some loss of information
+Population was long now str7
+Lessthan18YearsofAge was double now str11
+Lessthan18YearsofAge was forced to string; some loss of information
+LM was double now str11
+LM was forced to string; some loss of information
+Black was long now str6
+LO was double now str11
+LO was forced to string; some loss of information
+AmericanIndianorAlaskaNati was int now str5
+LQ was double now str11
+Asian was long now str5
+LS was double now str11
+LS was forced to string; some loss of information
+NativeHawaiianorOtherPacif was int now str4
+LU was double now str11
+Hispanic was long now str6
+LW was double now str11
+LW was forced to string; some loss of information
+NonHispanicWhite was long now str7
+LY was double now str11
+LY was forced to string; some loss of information
+NotProficientinEnglish was long now str5
+MA was double now str11
+MA was forced to string; some loss of information
+MB was double now str11
+MB was forced to string; some loss of information
+MC was double now str11
+MC was forced to string; some loss of information
+Female was double now str11
+Female was forced to string; some loss of information
+RuralResidents was long now str7
+Rural was double now str11
+Rural was forced to string; some loss of information
+Year already string; no replace
+(variable L was str1, now str11 to accommodate using data's values)
+(variable U was str1, now str11 to accommodate using data's values)
+(variable X was str1, now str11 to accommodate using data's values)
+(variable AJ was str1, now str11 to accommodate using data's values)
+(variable AK was str1, now str11 to accommodate using data's values)
+(variable AR was str1, now str11 to accommodate using data's values)
+(variable AU was str1, now str11 to accommodate using data's values)
+(variable BA was str4, now str11 to accommodate using data's values)
+(variable BJ was str1, now str11 to accommodate using data's values)
+(variable BQ was str1, now str11 to accommodate using data's values)
+(variable BT was str1, now str11 to accommodate using data's values)
+(variable BV was str1, now str11 to accommodate using data's values)
+(variable BZ was str4, now str11 to accommodate using data's values)
+(variable CH was str1, now str11 to accommodate using data's values)
+(variable CI was str1, now str4 to accommodate using data's values)
+(variable CR was str1, now str11 to accommodate using data's values)
+(variable CS was str1, now str11 to accommodate using data's values)
+(variable CU was str1, now str11 to accommodate using data's values)
+(variable DG was str4, now str11 to accommodate using data's values)
+(variable DK was str4, now str11 to accommodate using data's values)
+(variable DY was str1, now str11 to accommodate using data's values)
+(variable DZ was str1, now str11 to accommodate using data's values)
+(variable EF was str1, now str11 to accommodate using data's values)
+(variable EG was str1, now str11 to accommodate using data's values)
+(variable EH was str1, now str11 to accommodate using data's values)
+(variable EI was str1, now str11 to accommodate using data's values)
+(variable FL was str1, now str11 to accommodate using data's values)
+(variable HD was str1, now str11 to accommodate using data's values)
+(variable HM was str1, now str11 to accommodate using data's values)
+(variable HP was str1, now str11 to accommodate using data's values)
+(variable HT was str4, now str11 to accommodate using data's values)
+(variable ID was str1, now str11 to accommodate using data's values)
+(variable IM was str1, now str11 to accommodate using data's values)
+(variable JB was str1, now str11 to accommodate using data's values)
+(variable JD was str1, now str7 to accommodate using data's values)
+(variable JE was str1, now str11 to accommodate using data's values)
+(variable JF was str1, now str11 to accommodate using data's values)
+(variable JK was str1, now str11 to accommodate using data's values)
+(variable JM was str1, now str11 to accommodate using data's values)
+(variable JO was str1, now str11 to accommodate using data's values)
+(variable K was str1, now str11 to accommodate using data's values)
+(variable T was str1, now str11 to accommodate using data's values)
+(variable W was str1, now str11 to accommodate using data's values)
+(variable AS was str1, now str11 to accommodate using data's values)
+(variable AT was str1, now str11 to accommodate using data's values)
+(variable AW was str1, now str11 to accommodate using data's values)
+(variable BI was str1, now str11 to accommodate using data's values)
+(variable BS was str1, now str11 to accommodate using data's values)
+(variable CJ was str1, now str11 to accommodate using data's values)
+(variable CK was str1, now str11 to accommodate using data's values)
+(variable CT was str1, now str11 to accommodate using data's values)
+(variable CZ was str10, now str11 to accommodate using data's values)
+(variable DF was str4, now str11 to accommodate using data's values)
+(variable DW was str1, now str11 to accommodate using data's values)
+(variable EE was str1, now str11 to accommodate using data's values)
+(variable HF was str1, now str11 to accommodate using data's values)
+(variable HG was str1, now str11 to accommodate using data's values)
+(variable IL was str1, now str11 to accommodate using data's values)
+(variable IO was str1, now str11 to accommodate using data's values)
+(variable IP was str1, now str11 to accommodate using data's values)
+(variable JC was str1, now str11 to accommodate using data's values)
+(variable JJ was str1, now str11 to accommodate using data's values)
+(variable JL was str1, now str11 to accommodate using data's values)
+(variable JN was str1, now str11 to accommodate using data's values)
+(variable DX was str1, now str11 to accommodate using data's values)
+(variable ED was str1, now str11 to accommodate using data's values)
+(variable IC was str1, now str11 to accommodate using data's values)
+(variable HL was str1, now str11 to accommodate using data's values)
+(variable CP was str1, now str11 to accommodate using data's values)
+(variable AV was str1, now str11 to accommodate using data's values)
+(variable BU was str1, now str4 to accommodate using data's values)
+(variable CL was str1, now str11 to accommodate using data's values)
+(variable CQ was str1, now str11 to accommodate using data's values)
+(variable BR was str1, now str11 to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. use `master', clear
+
+. di "All files successfully processed and appended."
+All files successfully processed and appended.
+
+. 
+. // ------------------------ Step 3: Clean and Format ----------------
+. destring Population, replace
+Population: all characters numeric; replaced as long
+
+. gen Ann_RuralPop = RuralResidents
+(726 missing values generated)
+
+. replace Ann_RuralPop = Rural if missing(Ann_RuralPop)
+(605 real changes made)
+
+. replace Ann_RuralPop = ruralresidents if missing(Ann_RuralPop)
+(121 real changes made)
+
+. destring Ann_RuralPop, replace
+Ann_RuralPop: all characters numeric; replaced as long
+
+. 
+. gen Ann_RuralPopPerc = (Ann_RuralPop / Population) * 100 if Population > 0
+
+. replace Ann_RuralPopPerc = . if Population <= 0 | missing(Population)
+(0 real changes made)
+
+. 
+. gen Ann_FoodInsecurePerc = .
+(968 missing values generated)
+
+. destring DK CM CO AK AB AQ Year, replace
+DK: all characters numeric; replaced as double
+(491 missing values generated)
+CM: all characters numeric; replaced as double
+(480 missing values generated)
+CO: all characters numeric; replaced as double
+(729 missing values generated)
+AK: all characters numeric; replaced as double
+(827 missing values generated)
+AB: all characters numeric; replaced as double
+(845 missing values generated)
+AQ: all characters numeric; replaced as double
+(419 missing values generated)
+Year: all characters numeric; replaced as int
+
+. 
+. replace Ann_FoodInsecurePerc = DK if Year == 2024
+(121 real changes made)
+
+. replace Ann_FoodInsecurePerc = CM if inlist(Year, 2020, 2021, 2023)
+(363 real changes made)
+
+. replace Ann_FoodInsecurePerc = CO if Year == 2022
+(121 real changes made)
+
+. replace Ann_FoodInsecurePerc = AK if Year == 2018
+(121 real changes made)
+
+. replace Ann_FoodInsecurePerc = AB if Year == 2017
+(121 real changes made)
+
+. replace Ann_FoodInsecurePerc = AQ if Year == 2019
+(121 real changes made)
+
+. 
+. label variable Ann_RuralPopPerc "Annual Percent Rural Population"
+
+. label variable Ann_FoodInsecurePerc "Annual Percent Food Insecure"
+
+. 
+. // Keep relevant vars
+. keep County Year Population Ann_RuralPopPerc Ann_FoodInsecurePerc
+
+. 
+. rename County COUNTY
+
+. replace COUNTY = upper(trim(COUNTY))
+(960 real changes made)
+
+. drop if COUNTY == ""
+(8 observations deleted)
+
+. label variable COUNTY "County Name"
+
+. 
+. // ------------------------ Step 4: Expand to Monthly ---------------
+. gen Month = .
+(960 missing values generated)
+
+. expand 12
+(10,560 observations created)
+
+. bysort COUNTY Year (Month): replace Month = _n
+(11,520 real changes made)
+
+. 
+. gen MonthFormatted = string(Month, "%02.0f")
+
+. drop Month
+
+. rename MonthFormatted Month
+
+. 
+. sort COUNTY Year Month
+
+. order COUNTY Year Month Ann_FoodInsecurePerc Ann_RuralPopPerc Population
+
+. 
+. destring Year, replace
+Year already numeric; no replace
+
+. destring Month, replace
+Month: all characters numeric; replaced as byte
+
+. replace COUNTY = proper(lower(COUNTY))
+(11,520 real changes made)
+
+. 
+. // ------------------------ Step 5: Save Cleaned Data ---------------
+. save "`output_folder'/Cleaned_FoodInsecurity_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/County_Health_Rankings_Roadmaps_Data/Cleaned_FoodInsecurity_Data.dta saved
+
+. di "County Health Rankings data successfully cleaned and saved."
+County Health Rankings data successfully cleaned and saved.
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/County_Health_Rankings_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:53:58
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

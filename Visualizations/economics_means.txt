@@ -1,0 +1,12 @@
+Economic Variables Means		
+Variable	Waived Counties	Non Waived Counties
+Monthly Weighted Avg. Unemployment Rate	.0539	.0402
+	(.0179)	(.0054)
+Annual Weighted Avg. Percent Food Insecure	.1599	.1469
+	(.0224)	(.0109)
+Annual Weighted Avg. Percent Below Poverty Line	.1977	.1529
+	(.0536)	(.0066)
+Quarterly Weighted Avg. Weekly Wage (All Industries)	862.4185	922.2103
+	(127.849)	(82.7889)
+Observations	94	94
+Standard deviations in parentheses		

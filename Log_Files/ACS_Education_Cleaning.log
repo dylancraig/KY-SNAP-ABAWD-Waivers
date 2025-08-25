@@ -1,0 +1,209 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/ACS_Education_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:53:52
+
+. 
+. /***********************************************
+> FILE NAME: ACS_Education_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and clean ACS county-level education data with selected variables.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: ACS_Education_Cleaning"
+FILE NAME: ACS_Education_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and clean ACS county-level education data with selected variables."
+PURPOSE: Process and clean ACS county-level education data with selected variables.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. local raw_folder "$base_path/Raw_Data/ACS_County_Characteristics_Data/ACS_Education"
+
+. local file_pattern "*.csv"
+
+. 
+. // ------------------------ Step 2: Initialize Master Dataset --------
+. clear
+
+. tempfile master
+
+. save `master', emptyok replace
+(dataset contains 0 observations)
+(file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp not found)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 3: Process Files -------------------
+. local files : dir "`raw_folder'" files "`file_pattern'"
+
+. 
+. foreach file of local files {
+  2.     di "Processing file: `file'"
+  3.     local filepath "`raw_folder'/`file'"
+  4.     di "Full file path: `filepath'"
+  5. 
+.     // Import CSV file
+.     capture import delimited "`filepath'", varnames(1) stringcols(_all) clear
+  6.     if _rc {
+  7.         di "Error: Could not import `file'. Skipping."
+  8.         continue
+  9.     }
+ 10. 
+.     // Extract year from filename
+.     gen Year = real(regexs(1)) if regexm("`file'", "([0-9]{4})")
+ 11.     if missing(Year) {
+ 12.         di "Error: Could not extract year from `file'. Skipping."
+ 13.         continue
+ 14.     }
+ 15. 
+.     // Append
+.     append using `master'
+ 16.     save `master', replace
+ 17. }
+Processing file: acsst5y2017.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2017.s1501-data.csv
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsst5y2018.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2018.s1501-data.csv
+(variable s1501_c01_014e was str77, now strL to accommodate using data's values)
+(variable s1501_c01_015e was str74, now strL to accommodate using data's values)
+(variable s1501_c02_015e was str76, now strL to accommodate using data's values)
+(variable s1501_c03_014e was str76, now strL to accommodate using data's values)
+(variable s1501_c03_015e was str73, now strL to accommodate using data's values)
+(variable s1501_c05_015e was str75, now strL to accommodate using data's values)
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsst5y2019.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2019.s1501-data.csv
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsst5y2020.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2020.s1501-data.csv
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsst5y2021.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2021.s1501-data.csv
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+Processing file: acsst5y2022.s1501-data.csv
+Full file path: C:\KY-SNAP-ABAWD-Waivers/Raw_Data/ACS_County_Characteristics_Data/ACS_Education/acsst5y2022.s1501-data.csv
+file C:\Users\dscra\AppData\Local\Temp\ST_e504_000001.tmp saved as .dta format
+
+. 
+. // ------------------------ Step 4: Keep Relevant Variables ----------
+. use `master', clear
+
+. 
+. keep s1501_c02_014e s1501_c02_015e name s1501_c01_006e Year
+
+. rename s1501_c01_006e Ann_25_Over_Pop
+
+. rename s1501_c02_014e Ann_Perc_HS_25_Over
+
+. rename s1501_c02_015e Ann_Perc_Bach_25_Over
+
+. rename name COUNTY
+
+. 
+. // Drop first row if extra header
+. drop in 1
+(1 observation deleted)
+
+. 
+. // Standardize COUNTY
+. gen COUNTY_clean = upper(subinstr(COUNTY, " County, Kentucky", "", .))
+
+. drop COUNTY
+
+. rename COUNTY_clean COUNTY
+
+. 
+. // ------------------------ Step 5: Add Month Variable ---------------
+. gen Month = .
+(725 missing values generated)
+
+. expand 12
+(7,975 observations created)
+
+. bysort COUNTY Year (Month): replace Month = _n
+(8,700 real changes made)
+
+. 
+. gen MonthFormatted = string(Month, "%02.0f")
+
+. drop Month
+
+. rename MonthFormatted Month
+
+. 
+. order COUNTY Year Month Ann_25_Over_Pop Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over
+
+. 
+. drop if COUNTY == "GEOGRAPHIC AREA NAME"
+(60 observations deleted)
+
+. 
+. destring Month, replace
+Month: all characters numeric; replaced as byte
+
+. destring Year, replace
+Year already numeric; no replace
+
+. destring Ann_25_Over_Pop, replace
+Ann_25_Over_Pop: all characters numeric; replaced as long
+
+. destring Ann_Perc_HS_25_Over, replace
+Ann_Perc_HS_25_Over: all characters numeric; replaced as double
+
+. destring Ann_Perc_Bach_25_Over, replace
+Ann_Perc_Bach_25_Over: all characters numeric; replaced as double
+
+. 
+. replace COUNTY = proper(lower(COUNTY))
+(8,640 real changes made)
+
+. 
+. // Labels
+. label variable Ann_25_Over_Pop "Annual estimate: Population 25 years and over"
+
+. label variable Ann_Perc_HS_25_Over "Annual percentage: Population 25+ with high school diploma or higher"
+
+. label variable Ann_Perc_Bach_25_Over "Annual percentage: Population 25+ with bachelor's degree or higher"
+
+. 
+. // ------------------------ Step 6: Save Final Dataset ---------------
+. di "Saving final dataset with selected variables..."
+Saving final dataset with selected variables...
+
+. save "$base_path/Data_Outputs/ACS_Education/ACS_Education_Cleaned.dta", replace
+(file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/ACS_Education/ACS_Education_Cleaned.dta not found)
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/ACS_Education/ACS_Education_Cleaned.dta saved
+
+. di "File successfully saved as ACS_Education_Cleaned.dta"
+File successfully saved as ACS_Education_Cleaned.dta
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/ACS_Education_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:53:54
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

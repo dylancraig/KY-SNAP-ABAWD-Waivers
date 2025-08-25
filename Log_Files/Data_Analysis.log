@@ -1,0 +1,412 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Data_Analysis.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:54:21
+
+. 
+. /***********************************************
+> FILE NAME: Data_Analysis
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Collapse SNAP-related data by WaiverStatus, Year, and Month,
+>          and create a final, merged dataset.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: Data_Analysis"
+FILE NAME: Data_Analysis
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Collapse SNAP-related data by WaiverStatus, Year, and Month,"
+PURPOSE: Collapse SNAP-related data by WaiverStatus, Year, and Month,
+
+. di as txt "         and create a final, merged dataset."
+         and create a final, merged dataset.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Weighted Means ------------------
+. use "$base_path/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta", clear
+
+. 
+. collapse (mean) Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_NH_AIAN Ann_Perc_NH_Asian ///
+>          Ann_Perc_NH_NHOPI Ann_Perc_NH_Other Ann_Perc_NH_TwoOrMore Ann_Perc_Hispanic_Latino ///
+>          Mnthly_Unemployment_Rate Ann_FoodInsecurePerc Ann_RuralPopPerc Ann_Perc_Below_Poverty Quart_Wkly_Wage ///
+>          [aw=Ann_Population], by(WaiverStatus Year Month)
+
+. 
+. save "$base_path/Data_Outputs/Final_Collapsed_Data/temp_weighted_means.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Final_Collapsed_Data/temp_weighted_means.dta saved
+
+. 
+. // ------------------------ Step 2: Education Weighted Means --------
+. use "$base_path/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta", clear
+
+. 
+. collapse (mean) Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over [aw=Ann_25_Over_Pop], ///
+>          by(WaiverStatus Year Month)
+
+. 
+. save "$base_path/Data_Outputs/Final_Collapsed_Data/temp_education_means.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Final_Collapsed_Data/temp_education_means.dta saved
+
+. 
+. // ------------------------ Step 3: Sums ----------------------------
+. use "$base_path/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta", clear
+
+. gen count_dummy = 1
+
+. 
+. collapse (sum) Mnthly_WorkReg_16_59 Mnthly_ActiveSNAP_18_49 Mnthly_WorkReg_18_49 Mnthly_Working80Hrs ///
+>     Mnthly_Dep_Child Mnthly_Pregnancy Mnthly_WEPVES Mnthly_ABAWD_Comply Mnthly_STLP ///
+>     Mnthly_ActiveSNAP_18_52 Mnthly_WorkReg_18_52 Mnthly_Veteran Mnthly_Homeless Mnthly_FosterCare ///
+>     Mnthly_ActiveSNAP_18_54 Mnthly_WorkReg_18_54 (sum) Number_Counties = count_dummy, ///
+>     by(WaiverStatus Year Month)
+
+. 
+. save "$base_path/Data_Outputs/Final_Collapsed_Data/temp_sums.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Final_Collapsed_Data/temp_sums.dta saved
+
+. 
+. // ------------------------ Step 4: Generate All Observations --------
+. clear
+
+. set obs 192  // 8 years (2017-2024) * 12 months * 2 WaiverStatus
+Number of observations (_N) was 0, now 192.
+
+. gen Year = 2017 + int((_n-1)/24)
+
+. gen Month = mod(int((_n-1)/2), 12) + 1
+
+. gen WaiverStatus = mod((_n-1), 2)
+
+. 
+. label define WaiverStatus_lbl 0 "Not Waived" 1 "Waived"
+
+. label values WaiverStatus WaiverStatus_lbl
+
+. 
+. drop if Year == 2024 & Month >= 11
+(4 observations deleted)
+
+. 
+. merge 1:1 WaiverStatus Year Month using "$base_path/Data_Outputs/Final_Collapsed_Data/temp_weighted_means.dta", keep(master match) nogen
+(label WaiverStatus_lbl already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                            62
+        from master                        62  
+        from using                          0  
+
+    Matched                               126  
+    -----------------------------------------
+
+. merge 1:1 WaiverStatus Year Month using "$base_path/Data_Outputs/Final_Collapsed_Data/temp_education_means.dta", keep(master match) nogen
+(label WaiverStatus_lbl already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                            80
+        from master                        80  
+        from using                          0  
+
+    Matched                               108  
+    -----------------------------------------
+
+. merge 1:1 WaiverStatus Year Month using "$base_path/Data_Outputs/Final_Collapsed_Data/temp_sums.dta", keep(master match) nogen
+(label WaiverStatus_lbl already defined)
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                            42
+        from master                        42  
+        from using                          0  
+
+    Matched                               146  
+    -----------------------------------------
+
+. 
+. // ------------------------ Step 5: Label Variables -----------------
+. label variable Ann_Perc_NH_White "Annual Weighted Avg. Percent Non-Hispanic White"
+
+. label variable Ann_Perc_NH_Black "Annual Weighted Avg. Percent Non-Hispanic Black"
+
+. label variable Ann_Perc_NH_AIAN "Annual Weighted Avg. Percent Non-Hispanic AIAN"
+
+. label variable Ann_Perc_NH_Asian "Annual Weighted Avg. Percent Non-Hispanic Asian"
+
+. label variable Ann_Perc_NH_NHOPI "Annual Weighted Avg. Percent Non-Hispanic NHOPI"
+
+. label variable Ann_Perc_NH_Other "Annual Weighted Avg. Percent Non-Hispanic Other Race"
+
+. label variable Ann_Perc_NH_TwoOrMore "Annual Weighted Avg. Percent Non-Hispanic Two or More Races"
+
+. label variable Ann_Perc_Hispanic_Latino "Annual Weighted Avg. Percent Hispanic or Latino"
+
+. label variable Ann_RuralPopPerc "Annual Weighted Avg. Percent Rural Population"
+
+. 
+. label variable Mnthly_Unemployment_Rate "Monthly Weighted Avg. Unemployment Rate"
+
+. label variable Ann_FoodInsecurePerc "Annual Weighted Avg. Percent Food Insecure"
+
+. label variable Ann_Perc_Below_Poverty "Annual Weighted Avg. Percent Below Poverty Line"
+
+. label variable Quart_Wkly_Wage "Quarterly Weighted Avg. Weekly Wage (All Industries)"
+
+. label variable Ann_Perc_HS_25_Over "Annual Weighted Avg. Percent with HS Diploma or Higher (25+)"
+
+. label variable Ann_Perc_Bach_25_Over "Annual Weighted Avg. Percent with Bachelor's Degree or Higher (25+)"
+
+. 
+. label variable Mnthly_ActiveSNAP_18_49 "Monthly Total SNAP Participants Aged 18-49"
+
+. label variable Mnthly_ActiveSNAP_18_52 "Monthly Total SNAP Participants Aged 18-52"
+
+. label variable Mnthly_ActiveSNAP_18_54 "Monthly Total SNAP Participants Aged 18-54"
+
+. label variable Mnthly_Veteran "Monthly Total Veterans"
+
+. label variable Mnthly_Homeless "Monthly Total Homeless"
+
+. label variable Mnthly_FosterCare "Monthly Total Foster Care Youth"
+
+. label variable Mnthly_WorkReg_16_59 "Monthly Total Work-Registered (16-59)"
+
+. label variable Mnthly_WorkReg_18_49 "Monthly Total Work-Registered (18-49)"
+
+. label variable Mnthly_WorkReg_18_52 "Monthly Total Work-Registered (18-52)"
+
+. label variable Mnthly_WorkReg_18_54 "Monthly Total Work-Registered (18-54)"
+
+. label variable Mnthly_Working80Hrs "Monthly Total Working >80 Hours"
+
+. label variable Mnthly_Dep_Child "Monthly Total Dependent Children"
+
+. label variable Mnthly_Pregnancy "Monthly Total Pregnant Individuals"
+
+. label variable Mnthly_WEPVES "Monthly Total WEP/VES Participants"
+
+. label variable Mnthly_ABAWD_Comply "Monthly Total ABAWDs Subject to Work Requirements"
+
+. label variable Mnthly_STLP "Monthly Total STLP Participants"
+
+. 
+. // ------------------------ Step 6: Summary Tables ------------------
+. * Economic Variables
+. outsum Mnthly_Unemployment_Rate Ann_FoodInsecurePerc Ann_Perc_Below_Poverty Quart_Wkly_Wage ///
+>     using "$base_path/Visualizations/economics_means.txt" if WaiverStatus==1, ///
+>     ctitle("Waived Counties") title("Economic Variables Means") replace
+
+. outsum Mnthly_Unemployment_Rate Ann_FoodInsecurePerc Ann_Perc_Below_Poverty Quart_Wkly_Wage ///
+>     using "$base_path/Visualizations/economics_means.txt" if WaiverStatus==0, ///
+>     ctitle("Non Waived Counties") append
+
+. 
+. * Demographic Variables
+. outsum Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_Hispanic_Latino Ann_Perc_NH_Asian ///
+>        Ann_Perc_NH_AIAN Ann_Perc_NH_NHOPI Ann_Perc_NH_Other Ann_Perc_NH_TwoOrMore ///
+>        Ann_RuralPopPerc Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over ///
+>     using "$base_path/Visualizations/demographics_means.txt" if WaiverStatus==1, ///
+>     ctitle("Waived Counties") title("Demographic Variables Means") replace
+
+. outsum Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_Hispanic_Latino Ann_Perc_NH_Asian ///
+>        Ann_Perc_NH_AIAN Ann_Perc_NH_NHOPI Ann_Perc_NH_Other Ann_Perc_NH_TwoOrMore ///
+>        Ann_RuralPopPerc Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over ///
+>     using "$base_path/Visualizations/demographics_means.txt" if WaiverStatus==0, ///
+>     ctitle("Non Waived Counties") append
+
+. 
+. * SNAP Variables
+. outsum Mnthly_WorkReg_16_59 Mnthly_ActiveSNAP_18_49 Mnthly_WorkReg_18_49 Mnthly_Working80Hrs ///
+>        Mnthly_Dep_Child Mnthly_Pregnancy Mnthly_WEPVES Mnthly_ABAWD_Comply Mnthly_STLP ///
+>        Mnthly_ActiveSNAP_18_52 Mnthly_WorkReg_18_52 Mnthly_Veteran Mnthly_Homeless Mnthly_FosterCare ///
+>        Mnthly_ActiveSNAP_18_54 Mnthly_WorkReg_18_54 ///
+>     using "$base_path/Visualizations/snap_means.txt" if WaiverStatus==1, ///
+>     ctitle("Waived Counties") title("SNAP Variables Means") replace
+
+. outsum Mnthly_WorkReg_16_59 Mnthly_ActiveSNAP_18_49 Mnthly_WorkReg_18_49 Mnthly_Working80Hrs ///
+>        Mnthly_Dep_Child Mnthly_Pregnancy Mnthly_WEPVES Mnthly_ABAWD_Comply Mnthly_STLP ///
+>        Mnthly_ActiveSNAP_18_52 Mnthly_WorkReg_18_52 Mnthly_Veteran Mnthly_Homeless Mnthly_FosterCare ///
+>        Mnthly_ActiveSNAP_18_54 Mnthly_WorkReg_18_54 ///
+>     using "$base_path/Visualizations/snap_means.txt" if WaiverStatus==0, ///
+>     ctitle("Non Waived Counties") append
+
+. 
+. // ------------------------ Step 7: Regressions ----------------------
+. use "$base_path/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta", clear
+
+. gen YearMonth = ym(Year, Month)
+
+. format YearMonth %tm
+
+. egen COUNTY_num = group(COUNTY), label
+
+. xtset COUNTY_num YearMonth
+
+Panel variable: COUNTY_num (unbalanced)
+ Time variable: YearMonth, 2017m1 to 2024m12, but with gaps
+         Delta: 1 month
+
+. 
+. global econ_controls Quart_Wkly_Wage Ann_Perc_Below_Poverty
+
+. global demo_controls Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_Hispanic_Latino ///
+>     Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over Ann_RuralPopPerc
+
+. 
+. reghdfe Ann_FoodInsecurePerc WaiverStatus Mnthly_Unemployment_Rate, ///
+>     absorb(COUNTY YearMonth) vce(cluster COUNTY_num)
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =     11,160
+Absorbing 2 HDFE groups                           F(   2,    119) =      10.68
+Statistics robust to heteroskedasticity           Prob > F        =     0.0001
+                                                  R-squared       =     0.9153
+                                                  Adj R-squared   =     0.9137
+                                                  Within R-sq.    =     0.0262
+Number of clusters (COUNTY_num) =        120      Root MSE        =     0.0099
+
+                                       (Std. err. adjusted for 120 clusters in COUNTY_num)
+------------------------------------------------------------------------------------------
+                         |               Robust
+    Ann_FoodInsecurePerc | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+            WaiverStatus |  -.0026006   .0015621    -1.66   0.099    -.0056936    .0004925
+Mnthly_Unemployment_Rate |  -.2035254   .0485276    -4.19   0.000     -.299615   -.1074358
+                   _cons |   .1704409   .0027703    61.52   0.000     .1649554    .1759263
+------------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+      COUNTY |       120         120           0    *|
+   YearMonth |        93           1          92     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using "$base_path/Visualizations/Regression_Table.doc", ///
+>     bdec(4) title("Regression Estimates: Annual Food Insecurity Rate") ///
+>     cttop("Dependent Variable: Annual Food Insecurity Percentage") ///
+>     ctitle("Model 1: Unemployment Rate Control") word replace
+C:\KY-SNAP-ABAWD-Waivers/Visualizations/Regression_Table.doc
+dir : seeout
+
+. 
+. reghdfe Ann_FoodInsecurePerc WaiverStatus Mnthly_Unemployment_Rate $econ_controls, ///
+>     absorb(COUNTY YearMonth) vce(cluster COUNTY_num)
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =      8,640
+Absorbing 2 HDFE groups                           F(   4,    119) =      15.73
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9267
+                                                  Adj R-squared   =     0.9250
+                                                  Within R-sq.    =     0.1024
+Number of clusters (COUNTY_num) =        120      Root MSE        =     0.0088
+
+                                       (Std. err. adjusted for 120 clusters in COUNTY_num)
+------------------------------------------------------------------------------------------
+                         |               Robust
+    Ann_FoodInsecurePerc | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+            WaiverStatus |   -.007579   .0019784    -3.83   0.000    -.0114964   -.0036616
+Mnthly_Unemployment_Rate |  -.1841566   .0365652    -5.04   0.000    -.2565595   -.1117538
+         Quart_Wkly_Wage |  -.0000445   9.09e-06    -4.90   0.000    -.0000625   -.0000266
+  Ann_Perc_Below_Poverty |  -.0609791   .0309672    -1.97   0.051    -.1222972    .0003391
+                   _cons |   .2216757   .0097096    22.83   0.000     .2024498    .2409016
+------------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+      COUNTY |       120         120           0    *|
+   YearMonth |        72           1          71     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using "$base_path/Visualizations/Regression_Table.doc", ///
+>     bdec(4) ctitle("Model 2: Other Economic Controls") word append
+C:\KY-SNAP-ABAWD-Waivers/Visualizations/Regression_Table.doc
+dir : seeout
+
+. 
+. reghdfe Ann_FoodInsecurePerc WaiverStatus Mnthly_Unemployment_Rate $econ_controls $demo_controls, ///
+>     absorb(COUNTY YearMonth) vce(cluster COUNTY_num)
+(MWFE estimator converged in 2 iterations)
+
+HDFE Linear regression                            Number of obs   =      8,640
+Absorbing 2 HDFE groups                           F(  10,    119) =       8.65
+Statistics robust to heteroskedasticity           Prob > F        =     0.0000
+                                                  R-squared       =     0.9333
+                                                  Adj R-squared   =     0.9318
+                                                  Within R-sq.    =     0.1841
+Number of clusters (COUNTY_num) =        120      Root MSE        =     0.0084
+
+                                       (Std. err. adjusted for 120 clusters in COUNTY_num)
+------------------------------------------------------------------------------------------
+                         |               Robust
+    Ann_FoodInsecurePerc | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------------+----------------------------------------------------------------
+            WaiverStatus |  -.0037321   .0023053    -1.62   0.108    -.0082969    .0008328
+Mnthly_Unemployment_Rate |  -.1471597   .0398861    -3.69   0.000    -.2261382   -.0681812
+         Quart_Wkly_Wage |  -.0000383   8.74e-06    -4.38   0.000    -.0000556   -.0000209
+  Ann_Perc_Below_Poverty |  -.0479162    .031039    -1.54   0.125    -.1093766    .0135442
+       Ann_Perc_NH_White |   .0213586   .0314546     0.68   0.498    -.0409247    .0836419
+       Ann_Perc_NH_Black |   .0789288   .1046389     0.75   0.452    -.1282666    .2861242
+Ann_Perc_Hispanic_Latino |  -.1928644   .1808262    -1.07   0.288    -.5509183    .1651895
+     Ann_Perc_HS_25_Over |   .0551285   .0456706     1.21   0.230    -.0353039     .145561
+   Ann_Perc_Bach_25_Over |  -.1093331   .0461808    -2.37   0.020    -.2007757   -.0178905
+        Ann_RuralPopPerc |   .1560582   .0787686     1.98   0.050     .0000886    .3120279
+                   _cons |   .0513093   .0714665     0.72   0.474    -.0902016    .1928202
+------------------------------------------------------------------------------------------
+
+Absorbed degrees of freedom:
+-----------------------------------------------------+
+ Absorbed FE | Categories  - Redundant  = Num. Coefs |
+-------------+---------------------------------------|
+      COUNTY |       120         120           0    *|
+   YearMonth |        72           1          71     |
+-----------------------------------------------------+
+* = FE nested within cluster; treated as redundant for DoF computation
+
+. outreg2 using "$base_path/Visualizations/Regression_Table.doc", ///
+>     bdec(4) ctitle("Model 3: Demographic Controls") word append
+C:\KY-SNAP-ABAWD-Waivers/Visualizations/Regression_Table.doc
+dir : seeout
+
+. 
+. // ------------------------ Step 8: Save Collapsed Data --------------
+. save "$base_path/Data_Outputs/Final_Collapsed_Data/Collapsed_Waiver_Status_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Final_Collapsed_Data/Collapsed_Waiver_Status_Data.dta saved
+
+. di "Dataset successfully processed and saved as Collapsed_Waiver_Status_Data.dta"
+Dataset successfully processed and saved as Collapsed_Waiver_Status_Data.dta
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Data_Analysis.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:25
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

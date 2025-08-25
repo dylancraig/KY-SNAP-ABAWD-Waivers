@@ -1,0 +1,36 @@
+SNAP Variables Means		
+Variable	Waived Counties	Non Waived Counties
+Monthly Total Work-Registered (16-59)	54126.22	41571.09
+	(37858.25)	(16821.75)
+Monthly Total SNAP Participants Aged 18-49	136278.9	79472.4
+	(88953.01)	(62253.83)
+Monthly Total Work-Registered (18-49)	36168.47	26697.49
+	(33075.3)	(19149.81)
+Monthly Total Working >80 Hours	293.956	823.8545
+	(517.1465)	(484.5773)
+Monthly Total Dependent Children	11888.93	23044.4
+	(17391.3)	(11251.88)
+Monthly Total Pregnant Individuals	54.3846	190.8545
+	(152.2715)	(180.5748)
+Monthly Total WEP/VES Participants	445.0769	823.8727
+	(1439.246)	(739.342)
+Monthly Total ABAWDs Subject to Work Requirements	30391.58	7829.582
+	(26023.19)	(3790.896)
+Monthly Total STLP Participants	0	0
+	(0)	(0)
+Monthly Total SNAP Participants Aged 18-52	19089.48	19988.8
+	(50971.6)	(40650.24)
+Monthly Total Work-Registered (18-52)	6273.582	5596.709
+	(16647.05)	(11440.18)
+Monthly Total Veterans	1.8681	22.8
+	(10.2915)	(45.7365)
+Monthly Total Homeless	61.956	613.5091
+	(368.7933)	(1175.005)
+Monthly Total Foster Care Youth	2.2637	15.4
+	(13.8466)	(29.3312)
+Monthly Total SNAP Participants Aged 18-54	1909.242	1548.455
+	(18213.01)	(11483.65)
+Monthly Total Work-Registered (18-54)	631.8791	418.3636
+	(6027.743)	(3102.668)
+Observations	94	94
+Standard deviations in parentheses		

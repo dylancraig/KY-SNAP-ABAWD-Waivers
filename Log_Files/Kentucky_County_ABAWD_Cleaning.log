@@ -1,0 +1,2374 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Kentucky_County_ABAWD_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:53:58
+
+. 
+. /***********************************************
+> FILE NAME: Kentucky_County_ABAWD_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and clean Kentucky County ABAWD data from Excel files.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: Kentucky_County_ABAWD_Cleaning"
+FILE NAME: Kentucky_County_ABAWD_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and clean Kentucky County ABAWD data from Excel files."
+PURPOSE: Process and clean Kentucky County ABAWD data from Excel files.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. clear all
+
+. local raw_folder "$base_path/Raw_Data/Kentucky_County_ABAWD_Data"
+
+. local files : dir "`raw_folder'" files "*.xlsx"
+
+. 
+. // ------------------------ Step 2: Read and Process Excel Files -----
+. foreach file of local files {
+  2.     di "Processing file: `file'"
+  3.     local filepath "`raw_folder'/`file'"
+  4. 
+.     // Extract month and year from filename
+.     local month = word("`file'", 1)
+  5.     local year  = substr("`file'", strpos("`file'", " ") + 1, 4)
+  6.     di "Extracted Month: `month', Year: `year'"
+  7. 
+.     // Determine header row
+.     if inlist(`year', 2017, 2021) {
+  8.         local row 10
+  9.     }
+ 10.     else if inlist(`year', 2018, 2019, 2020, 2022, 2023, 2024) {
+ 11.         local row 11
+ 12.     }
+ 13.     else {
+ 14.         di "Skipping file `file' - year not in expected range."
+ 15.         continue
+ 16.     }
+ 17. 
+.     // Import data
+.     import excel "`filepath'", sheet("KY_HBE_SNAPWorkRegistrantsandAB") cellrange(A`row') firstrow clear
+ 18. 
+.     // Force variables to string for consistency
+.     ds
+ 19.     foreach var of varlist `r(varlist)' {
+ 20.         tostring `var', replace force
+ 21.     }
+ 22. 
+.     // Add Year and Month
+.     gen Year = "`year'"
+ 23.     gen Month = "`month'"
+ 24. 
+.     // Save intermediate .dta
+.     local savename = subinstr("`file'", ".xlsx", "", .)
+ 25.     save "`raw_folder'/`savename'.dta", replace
+ 26.     di "Processed `file'"
+ 27. }
+Processing file: april 2017.xlsx
+Extracted Month: april, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2017.dta saved
+Processed april 2017.xlsx
+Processing file: april 2018.xlsx
+Extracted Month: april, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str4
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2018.dta saved
+Processed april 2018.xlsx
+Processing file: april 2019.xlsx
+Extracted Month: april, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2019.dta saved
+Processed april 2019.xlsx
+Processing file: april 2020.xlsx
+Extracted Month: april, Year: 2020
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2020.dta saved
+Processed april 2020.xlsx
+Processing file: april 2021.xlsx
+Extracted Month: april, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2021.dta saved
+Processed april 2021.xlsx
+Processing file: april 2022.xlsx
+Extracted Month: april, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2022.dta saved
+Processed april 2022.xlsx
+Processing file: april 2023.xlsx
+Extracted Month: april, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2023.dta saved
+Processed april 2023.xlsx
+Processing file: april 2024.xlsx
+Extracted Month: april, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/april 2024.dta saved
+Processed april 2024.xlsx
+Processing file: august 2017.xlsx
+Extracted Month: august, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2017.dta saved
+Processed august 2017.xlsx
+Processing file: august 2018.xlsx
+Extracted Month: august, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2018.dta saved
+Processed august 2018.xlsx
+Processing file: august 2019.xlsx
+Extracted Month: august, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2019.dta saved
+Processed august 2019.xlsx
+Processing file: august 2020.xlsx
+Extracted Month: august, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2020.dta saved
+Processed august 2020.xlsx
+Processing file: august 2022.xlsx
+Extracted Month: august, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2022.dta saved
+Processed august 2022.xlsx
+Processing file: august 2023.xlsx
+Extracted Month: august, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2023.dta saved
+Processed august 2023.xlsx
+Processing file: august 2024.xlsx
+Extracted Month: august, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/august 2024.dta saved
+Processed august 2024.xlsx
+Processing file: december 2017.xlsx
+Extracted Month: december, Year: 2017
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was long now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2017.dta saved
+Processed december 2017.xlsx
+Processing file: december 2018.xlsx
+Extracted Month: december, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2018.dta saved
+Processed december 2018.xlsx
+Processing file: december 2019.xlsx
+Extracted Month: december, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2019.dta saved
+Processed december 2019.xlsx
+Processing file: december 2020.xlsx
+Extracted Month: december, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2020.dta saved
+Processed december 2020.xlsx
+Processing file: december 2021.xlsx
+Extracted Month: december, Year: 2021
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2021.dta saved
+Processed december 2021.xlsx
+Processing file: december 2022.xlsx
+Extracted Month: december, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2022.dta saved
+Processed december 2022.xlsx
+Processing file: december 2023.xlsx
+Extracted Month: december, Year: 2023
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was int now str3
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/december 2023.dta saved
+Processed december 2023.xlsx
+Processing file: february 2017.xlsx
+Extracted Month: february, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2017.dta saved
+Processed february 2017.xlsx
+Processing file: february 2018.xlsx
+Extracted Month: february, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was long now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2018.dta saved
+Processed february 2018.xlsx
+Processing file: february 2019.xlsx
+Extracted Month: february, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2019.dta saved
+Processed february 2019.xlsx
+Processing file: february 2020.xlsx
+Extracted Month: february, Year: 2020
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2020.dta saved
+Processed february 2020.xlsx
+Processing file: february 2021.xlsx
+Extracted Month: february, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2021.dta saved
+Processed february 2021.xlsx
+Processing file: february 2022.xlsx
+Extracted Month: february, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2022.dta saved
+Processed february 2022.xlsx
+Processing file: february 2023.xlsx
+Extracted Month: february, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2023.dta saved
+Processed february 2023.xlsx
+Processing file: february 2024.xlsx
+Extracted Month: february, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was byte now str2
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/february 2024.dta saved
+Processed february 2024.xlsx
+Processing file: january 2018.xlsx
+Extracted Month: january, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was long now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2018.dta saved
+Processed january 2018.xlsx
+Processing file: january 2019.xlsx
+Extracted Month: january, Year: 2019
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2019.dta saved
+Processed january 2019.xlsx
+Processing file: january 2020.xlsx
+Extracted Month: january, Year: 2020
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2020.dta saved
+Processed january 2020.xlsx
+Processing file: january 2021.xlsx
+Extracted Month: january, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2021.dta saved
+Processed january 2021.xlsx
+Processing file: january 2022.xlsx
+Extracted Month: january, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2022.dta saved
+Processed january 2022.xlsx
+Processing file: january 2023.xlsx
+Extracted Month: january, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2023.dta saved
+Processed january 2023.xlsx
+Processing file: january 2024.xlsx
+Extracted Month: january, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was int now str3
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/january 2024.dta saved
+Processed january 2024.xlsx
+Processing file: july 2017.xlsx
+Extracted Month: july, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2017.dta saved
+Processed july 2017.xlsx
+Processing file: july 2018.xlsx
+Extracted Month: july, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2018.dta saved
+Processed july 2018.xlsx
+Processing file: july 2019.xlsx
+Extracted Month: july, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2019.dta saved
+Processed july 2019.xlsx
+Processing file: july 2020.xlsx
+Extracted Month: july, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2020.dta saved
+Processed july 2020.xlsx
+Processing file: july 2021.xlsx
+Extracted Month: july, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2021.dta saved
+Processed july 2021.xlsx
+Processing file: july 2022.xlsx
+Extracted Month: july, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2022.dta saved
+Processed july 2022.xlsx
+Processing file: july 2023.xlsx
+Extracted Month: july, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2023.dta saved
+Processed july 2023.xlsx
+Processing file: july 2024.xlsx
+Extracted Month: july, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/july 2024.dta saved
+Processed july 2024.xlsx
+Processing file: june 2017.xlsx
+Extracted Month: june, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2017.dta saved
+Processed june 2017.xlsx
+Processing file: june 2018.xlsx
+Extracted Month: june, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str4
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2018.dta saved
+Processed june 2018.xlsx
+Processing file: june 2019.xlsx
+Extracted Month: june, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2019.dta saved
+Processed june 2019.xlsx
+Processing file: june 2020.xlsx
+Extracted Month: june, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2020.dta saved
+Processed june 2020.xlsx
+Processing file: june 2021.xlsx
+Extracted Month: june, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2021.dta saved
+Processed june 2021.xlsx
+Processing file: june 2022.xlsx
+Extracted Month: june, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2022.dta saved
+Processed june 2022.xlsx
+Processing file: june 2023.xlsx
+Extracted Month: june, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2023.dta saved
+Processed june 2023.xlsx
+Processing file: june 2024.xlsx
+Extracted Month: june, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/june 2024.dta saved
+Processed june 2024.xlsx
+Processing file: march 2017.xlsx
+Extracted Month: march, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2017.dta saved
+Processed march 2017.xlsx
+Processing file: march 2018.xlsx
+Extracted Month: march, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2018.dta saved
+Processed march 2018.xlsx
+Processing file: march 2019.xlsx
+Extracted Month: march, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2019.dta saved
+Processed march 2019.xlsx
+Processing file: march 2021.xlsx
+Extracted Month: march, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2021.dta saved
+Processed march 2021.xlsx
+Processing file: march 2022.xlsx
+Extracted Month: march, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2022.dta saved
+Processed march 2022.xlsx
+Processing file: march 2023.xlsx
+Extracted Month: march, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2023.dta saved
+Processed march 2023.xlsx
+Processing file: march 2024.xlsx
+Extracted Month: march, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was byte now str2
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/march 2024.dta saved
+Processed march 2024.xlsx
+Processing file: may 2017.xlsx
+Extracted Month: may, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2017.dta saved
+Processed may 2017.xlsx
+Processing file: may 2018.xlsx
+Extracted Month: may, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str4
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2018.dta saved
+Processed may 2018.xlsx
+Processing file: may 2019.xlsx
+Extracted Month: may, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2019.dta saved
+Processed may 2019.xlsx
+Processing file: may 2020.xlsx
+Extracted Month: may, Year: 2020
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2020.dta saved
+Processed may 2020.xlsx
+Processing file: may 2021.xlsx
+Extracted Month: may, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2021.dta saved
+Processed may 2021.xlsx
+Processing file: may 2022.xlsx
+Extracted Month: may, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2022.dta saved
+Processed may 2022.xlsx
+Processing file: may 2023.xlsx
+Extracted Month: may, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2023.dta saved
+Processed may 2023.xlsx
+Processing file: may 2024.xlsx
+Extracted Month: may, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/may 2024.dta saved
+Processed may 2024.xlsx
+Processing file: november 2017.xlsx
+Extracted Month: november, Year: 2017
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str6
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was long now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2017.dta saved
+Processed november 2017.xlsx
+Processing file: november 2018.xlsx
+Extracted Month: november, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2018.dta saved
+Processed november 2018.xlsx
+Processing file: november 2019.xlsx
+Extracted Month: november, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str2
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2019.dta saved
+Processed november 2019.xlsx
+Processing file: november 2020.xlsx
+Extracted Month: november, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2020.dta saved
+Processed november 2020.xlsx
+Processing file: november 2021.xlsx
+Extracted Month: november, Year: 2021
+(11 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2021.dta saved
+Processed november 2021.xlsx
+Processing file: november 2022.xlsx
+Extracted Month: november, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2022.dta saved
+Processed november 2022.xlsx
+Processing file: november 2023.xlsx
+Extracted Month: november, Year: 2023
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was byte now str2
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/november 2023.dta saved
+Processed november 2023.xlsx
+Processing file: october 2017.xlsx
+Extracted Month: october, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str6
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str6
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was long now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2017.dta saved
+Processed october 2017.xlsx
+Processing file: october 2018.xlsx
+Extracted Month: october, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2018.dta saved
+Processed october 2018.xlsx
+Processing file: october 2019.xlsx
+Extracted Month: october, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2019.dta saved
+Processed october 2019.xlsx
+Processing file: october 2020.xlsx
+Extracted Month: october, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2020.dta saved
+Processed october 2020.xlsx
+Processing file: october 2021.xlsx
+Extracted Month: october, Year: 2021
+(11 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2021.dta saved
+Processed october 2021.xlsx
+Processing file: october 2022.xlsx
+Extracted Month: october, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2022.dta saved
+Processed october 2022.xlsx
+Processing file: october 2023.xlsx
+Extracted Month: october, Year: 2023
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was byte now str2
+HOMELESS was int now str3
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2023.dta saved
+Processed october 2023.xlsx
+Processing file: october 2024.xlsx
+Extracted Month: october, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~54  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~54  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO54 was long now str6
+WORKREGISTERED18TO54 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/october 2024.dta saved
+Processed october 2024.xlsx
+Processing file: september 2017.xlsx
+Extracted Month: september, Year: 2017
+(19 vars, 124 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was int now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was int now str5
+WORKREGISTERED18TO49 was int now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str3
+DEPENDENTCHILD was int now str4
+N was byte now str1
+PREGNANCY was byte now str1
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2017.dta saved
+Processed september 2017.xlsx
+Processing file: september 2018.xlsx
+Extracted Month: september, Year: 2018
+(19 vars, 125 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str4
+ABAWDSNEEDINGTOCOMPLY was int now str5
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2018.dta saved
+Processed september 2018.xlsx
+Processing file: september 2019.xlsx
+Extracted Month: september, Year: 2019
+(19 vars, 129 obs)
+A             C             WORKREG16~59  G             ACTIVESNA~49  K             DEPENDENTC~D  PREGNANCY     WEPVES        S
+COUNTY        D             F             H             WORKREGIS~49  WORKINGMOR~S  N             P             ABAWDSNEED~Y
+A was byte now str1
+COUNTY already string; no replace
+C was byte now str1
+D was byte now str1
+WORKREG16TO59 was long now str5
+F was byte now str1
+G was byte now str1
+H was byte now str1
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+K was byte now str1
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was long now str5
+N was byte now str1
+PREGNANCY was int now str3
+P was byte now str1
+WEPVES was int now str3
+ABAWDSNEEDINGTOCOMPLY was int now str4
+S was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2019.dta saved
+Processed september 2019.xlsx
+Processing file: september 2020.xlsx
+Extracted Month: september, Year: 2020
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str5
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2020.dta saved
+Processed september 2020.xlsx
+Processing file: september 2021.xlsx
+Extracted Month: september, Year: 2021
+(10 vars, 121 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was int now str4
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was int now str4
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2021.dta saved
+Processed september 2021.xlsx
+Processing file: september 2022.xlsx
+Extracted Month: september, Year: 2022
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was byte now str1
+DEPENDENTCHILD was byte now str1
+PREGNANCY was byte now str1
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2022.dta saved
+Processed september 2022.xlsx
+Processing file: september 2023.xlsx
+Extracted Month: september, Year: 2023
+(11 vars, 123 obs)
+REGION        COUNTY        WORKREGIS~59  ACTIVESNA~49  WORKREGIS~49  WORKINGMOR~S  DEPENDENTC~D  PREGNANCY     STLPARTICI~S  ABAWDSNEED~Y  K
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO49 was long now str6
+WORKREGISTERED18TO49 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+K was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2023.dta saved
+Processed september 2023.xlsx
+Processing file: september 2024.xlsx
+Extracted Month: september, Year: 2024
+(14 vars, 123 obs)
+REGION        WORKREGIS~59  WORKREGIS~52  DEPENDENTC~D  STLPARTICI~S  VETERAN       FOSTERCARE
+COUNTY        ACTIVESNA~52  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  HOMELESS      N
+REGION already string; no replace
+COUNTY already string; no replace
+WORKREGISTERED16TO59 already string; no replace
+ACTIVESNAP18TO52 was long now str6
+WORKREGISTERED18TO52 was long now str5
+WORKINGMORETHAN80HRS was int now str4
+DEPENDENTCHILD was int now str5
+PREGNANCY was int now str3
+STLPARTICIPANTS was byte now str1
+ABAWDSNEEDINGTOCOMPLY was long now str5
+VETERAN was int now str3
+HOMELESS was int now str4
+FOSTERCARE was byte now str2
+N was byte now str1
+file C:\KY-SNAP-ABAWD-Waivers/Raw_Data/Kentucky_County_ABAWD_Data/september 2024.dta saved
+Processed september 2024.xlsx
+
+. 
+. // ------------------------ Step 3: Combine All .dta Files ----------
+. local dtafiles : dir "`raw_folder'" files "*.dta"
+
+. clear
+
+. foreach file of local dtafiles {
+  2.     di "Appending file: `file'"
+  3.     append using "`raw_folder'/`file'", force
+  4. }
+Appending file: april 2017.dta
+Appending file: april 2018.dta
+(variable COUNTY was str12, now str15 to accommodate using data's values)
+(variable WORKREG16TO59 was str5, now str6 to accommodate using data's values)
+(variable ACTIVESNAP18TO49 was str5, now str6 to accommodate using data's values)
+(variable DEPENDENTCHILD was str4, now str5 to accommodate using data's values)
+(variable PREGNANCY was str1, now str4 to accommodate using data's values)
+(variable WEPVES was str3, now str4 to accommodate using data's values)
+(variable ABAWDSNEEDINGTOCOMPLY was str4, now str5 to accommodate using data's values)
+Appending file: april 2019.dta
+(variable COUNTY was str15, now str19 to accommodate using data's values)
+(variable WORKINGMORETHAN80HRS was str3, now str4 to accommodate using data's values)
+Appending file: april 2020.dta
+Appending file: april 2021.dta
+Appending file: april 2022.dta
+(variable WORKREGISTERED16TO59 was str4, now str5 to accommodate using data's values)
+Appending file: april 2023.dta
+Appending file: april 2024.dta
+Appending file: august 2017.dta
+(variable Month was str5, now str6 to accommodate using data's values)
+Appending file: august 2018.dta
+Appending file: august 2019.dta
+Appending file: august 2020.dta
+Appending file: august 2022.dta
+Appending file: august 2023.dta
+Appending file: august 2024.dta
+Appending file: december 2017.dta
+(variable Month was str6, now str8 to accommodate using data's values)
+Appending file: december 2018.dta
+Appending file: december 2019.dta
+Appending file: december 2020.dta
+Appending file: december 2021.dta
+Appending file: december 2022.dta
+Appending file: december 2023.dta
+(variable FOSTERCARE was str2, now str3 to accommodate using data's values)
+Appending file: february 2017.dta
+Appending file: february 2018.dta
+Appending file: february 2019.dta
+Appending file: february 2020.dta
+Appending file: february 2021.dta
+Appending file: february 2022.dta
+Appending file: february 2023.dta
+Appending file: february 2024.dta
+Appending file: january 2018.dta
+Appending file: january 2019.dta
+Appending file: january 2020.dta
+Appending file: january 2021.dta
+Appending file: january 2022.dta
+Appending file: january 2023.dta
+Appending file: january 2024.dta
+Appending file: july 2017.dta
+Appending file: july 2018.dta
+Appending file: july 2019.dta
+Appending file: july 2020.dta
+Appending file: july 2021.dta
+Appending file: july 2022.dta
+Appending file: july 2023.dta
+Appending file: july 2024.dta
+Appending file: june 2017.dta
+Appending file: june 2018.dta
+Appending file: june 2019.dta
+Appending file: june 2020.dta
+Appending file: june 2021.dta
+Appending file: june 2022.dta
+Appending file: june 2023.dta
+Appending file: june 2024.dta
+Appending file: march 2017.dta
+Appending file: march 2018.dta
+Appending file: march 2019.dta
+Appending file: march 2021.dta
+Appending file: march 2022.dta
+Appending file: march 2023.dta
+Appending file: march 2024.dta
+Appending file: may 2017.dta
+Appending file: may 2018.dta
+Appending file: may 2019.dta
+Appending file: may 2020.dta
+Appending file: may 2021.dta
+Appending file: may 2022.dta
+Appending file: may 2023.dta
+Appending file: may 2024.dta
+Appending file: november 2017.dta
+(variable WORKREGISTERED18TO49 was str5, now str6 to accommodate using data's values)
+Appending file: november 2018.dta
+Appending file: november 2019.dta
+Appending file: november 2020.dta
+Appending file: november 2021.dta
+Appending file: november 2022.dta
+Appending file: november 2023.dta
+Appending file: october 2017.dta
+Appending file: october 2018.dta
+Appending file: october 2019.dta
+Appending file: october 2020.dta
+Appending file: october 2021.dta
+Appending file: october 2022.dta
+Appending file: october 2023.dta
+Appending file: october 2024.dta
+Appending file: september 2017.dta
+(variable Month was str8, now str9 to accommodate using data's values)
+Appending file: september 2018.dta
+Appending file: september 2019.dta
+Appending file: september 2020.dta
+Appending file: september 2021.dta
+Appending file: september 2022.dta
+Appending file: september 2023.dta
+Appending file: september 2024.dta
+
+. 
+. // ------------------------ Step 4: Format Variables ----------------
+. replace Month = lower(Month)
+(0 real changes made)
+
+. replace Month = "01" if Month == "january"
+(869 real changes made)
+
+. replace Month = "02" if Month == "february"
+(997 real changes made)
+
+. replace Month = "03" if Month == "march"
+(868 real changes made)
+
+. replace Month = "04" if Month == "april"
+(997 real changes made)
+
+. replace Month = "05" if Month == "may"
+(997 real changes made)
+
+. replace Month = "06" if Month == "june"
+(989 real changes made)
+
+. replace Month = "07" if Month == "july"
+(989 real changes made)
+
+. replace Month = "08" if Month == "august"
+(868 real changes made)
+
+. replace Month = "09" if Month == "september"
+(989 real changes made)
+
+. replace Month = "10" if Month == "october"
+(989 real changes made)
+
+. replace Month = "11" if Month == "november"
+(867 real changes made)
+
+. replace Month = "12" if Month == "december"
+(869 real changes made)
+
+. 
+. destring Month, replace force
+Month: all characters numeric; replaced as byte
+
+. destring Year, replace
+Year: all characters numeric; replaced as int
+
+. 
+. // Destring numeric vars except COUNTY and REGION
+. ds
+A             D             G             WORKREGIS~49  DEPENDENTC~D  P             S             REGION        ACTIVESNA~52  HOMELESS      WORKREGIS~54
+COUNTY        WORKREG16~59  H             K             N             WEPVES        Year          WORKREGIS~59  WORKREGIS~52  FOSTERCARE
+C             F             ACTIVESNA~49  WORKINGMOR~S  PREGNANCY     ABAWDSNEED~Y  Month         STLPARTICI~S  VETERAN       ACTIVESNA~54
+
+. foreach var of varlist `r(varlist)' {
+  2.     if !inlist("`var'", "COUNTY", "REGION", "Month", "Year") {
+  3.         destring `var', replace force
+  4.     }
+  5. }
+A: all characters numeric; replaced as byte
+(11288 missing values generated)
+C: all characters numeric; replaced as byte
+(11288 missing values generated)
+D: all characters numeric; replaced as byte
+(11288 missing values generated)
+WORKREG16TO59: all characters numeric; replaced as long
+(6424 missing values generated)
+F: all characters numeric; replaced as byte
+(11288 missing values generated)
+G: all characters numeric; replaced as byte
+(11288 missing values generated)
+H: all characters numeric; replaced as byte
+(11288 missing values generated)
+ACTIVESNAP18TO49: all characters numeric; replaced as long
+(1705 missing values generated)
+WORKREGISTERED18TO49: all characters numeric; replaced as long
+(1705 missing values generated)
+K: all characters numeric; replaced as byte
+(11288 missing values generated)
+WORKINGMORETHAN80HRS: all characters numeric; replaced as int
+(132 missing values generated)
+DEPENDENTCHILD: all characters numeric; replaced as long
+(132 missing values generated)
+N: all characters numeric; replaced as byte
+(11288 missing values generated)
+PREGNANCY: all characters numeric; replaced as int
+(132 missing values generated)
+P: all characters numeric; replaced as byte
+(11288 missing values generated)
+WEPVES: all characters numeric; replaced as int
+(6424 missing values generated)
+ABAWDSNEEDINGTOCOMPLY: all characters numeric; replaced as long
+(132 missing values generated)
+S: all characters numeric; replaced as byte
+(11288 missing values generated)
+WORKREGISTERED16TO59: all characters numeric; replaced as long
+(4996 missing values generated)
+STLPARTICIPANTS: all characters numeric; replaced as byte
+(4996 missing values generated)
+ACTIVESNAP18TO52: all characters numeric; replaced as long
+(9836 missing values generated)
+WORKREGISTERED18TO52: all characters numeric; replaced as long
+(9836 missing values generated)
+VETERAN: all characters numeric; replaced as int
+(9715 missing values generated)
+HOMELESS: all characters numeric; replaced as int
+(9715 missing values generated)
+FOSTERCARE: all characters numeric; replaced as int
+(9715 missing values generated)
+ACTIVESNAP18TO54: all characters numeric; replaced as long
+(11167 missing values generated)
+WORKREGISTERED18TO54: all characters numeric; replaced as long
+(11167 missing values generated)
+
+. 
+. sort COUNTY Year Month
+
+. order COUNTY REGION Year Month
+
+. 
+. // ------------------------ Step 5: Standardize Variables -----------
+. gen Mnthly_WorkReg_16_59 = WORKREGISTERED16TO59
+(4,996 missing values generated)
+
+. replace Mnthly_WorkReg_16_59 = WORKREG16TO59 if missing(Mnthly_WorkReg_16_59)
+(4,864 real changes made)
+
+. label variable Mnthly_WorkReg_16_59 "Monthly work-registered individuals aged 16-59"
+
+. drop WORKREGISTERED16TO59 WORKREG16TO59
+
+. 
+. rename ACTIVESNAP18TO49 Mnthly_ActiveSNAP_18_49
+
+. label variable Mnthly_ActiveSNAP_18_49 "Monthly active SNAP participants aged 18-49"
+
+. 
+. rename WORKREGISTERED18TO49 Mnthly_WorkReg_18_49
+
+. label variable Mnthly_WorkReg_18_49 "Monthly work-registered individuals aged 18-49"
+
+. 
+. rename WORKINGMORETHAN80HRS Mnthly_Working80Hrs
+
+. label variable Mnthly_Working80Hrs "Individuals working > 80 hrs/month"
+
+. 
+. rename DEPENDENTCHILD Mnthly_Dep_Child
+
+. label variable Mnthly_Dep_Child "Monthly dependent children count"
+
+. 
+. rename PREGNANCY Mnthly_Pregnancy
+
+. label variable Mnthly_Pregnancy "Monthly pregnancy status count"
+
+. 
+. rename WEPVES Mnthly_WEPVES
+
+. label variable Mnthly_WEPVES "Monthly WEP/VES participation"
+
+. 
+. rename ABAWDSNEEDINGTOCOMPLY Mnthly_ABAWD_Comply
+
+. label variable Mnthly_ABAWD_Comply "Monthly ABAWDs needing to comply with work reqs"
+
+. 
+. rename STLPARTICIPANTS Mnthly_STLP
+
+. label variable Mnthly_STLP "Monthly STLP participants count"
+
+. 
+. rename ACTIVESNAP18TO52 Mnthly_ActiveSNAP_18_52
+
+. label variable Mnthly_ActiveSNAP_18_52 "Monthly active SNAP participants aged 18-52"
+
+. 
+. rename WORKREGISTERED18TO52 Mnthly_WorkReg_18_52
+
+. label variable Mnthly_WorkReg_18_52 "Monthly work-registered individuals aged 18-52"
+
+. 
+. rename VETERAN Mnthly_Veteran
+
+. label variable Mnthly_Veteran "Monthly veteran status individuals count"
+
+. 
+. rename HOMELESS Mnthly_Homeless
+
+. label variable Mnthly_Homeless "Monthly homeless status individuals count"
+
+. 
+. rename FOSTERCARE Mnthly_FosterCare
+
+. label variable Mnthly_FosterCare "Monthly foster care status individuals count"
+
+. 
+. rename ACTIVESNAP18TO54 Mnthly_ActiveSNAP_18_54
+
+. label variable Mnthly_ActiveSNAP_18_54 "Monthly active SNAP participants aged 18-54"
+
+. 
+. rename WORKREGISTERED18TO54 Mnthly_WorkReg_18_54
+
+. label variable Mnthly_WorkReg_18_54 "Monthly work-registered individuals aged 18-54"
+
+. 
+. // ------------------------ Step 6: Clean Identifiers ----------------
+. replace COUNTY = proper(lower(trim(COUNTY)))
+(11,081 real changes made)
+
+. replace REGION = proper(lower(trim(REGION)))
+(6,292 real changes made)
+
+. drop if trim(COUNTY) == ""
+(132 observations deleted)
+
+. 
+. // ------------------------ Step 7: Save Final Dataset ---------------
+. save "$base_path/Data_Outputs/Kentucky_County_ABAWD_Data/Cleaned_ABAWD_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Kentucky_County_ABAWD_Data/Cleaned_ABAWD_Data.dta saved
+
+. di "Kentucky County ABAWD data successfully processed and saved."
+Kentucky County ABAWD data successfully processed and saved.
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Kentucky_County_ABAWD_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:02
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

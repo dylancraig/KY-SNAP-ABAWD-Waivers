@@ -1,0 +1,154 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/QCEW_County_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:54:09
+
+. 
+. /***********************************************
+> FILE NAME: QCEW_County_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Process and clean QCEW county-level employment and wages data.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: QCEW_County_Cleaning"
+FILE NAME: QCEW_County_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Process and clean QCEW county-level employment and wages data."
+PURPOSE: Process and clean QCEW county-level employment and wages data.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Set Up --------------------------
+. local raw_folder    "$base_path/Raw_Data/QCEW_County_Data"
+
+. local file          "Employment and Wages by Industry.xlsx"
+
+. local output_folder "$base_path/Data_Outputs/QCEW_County_Data"
+
+. 
+. // ------------------------ Step 2: Import Excel File ----------------
+. di "Processing: `file'"
+Processing: Employment and Wages by Industry.xlsx
+
+. local filepath "`raw_folder'/`file'"
+
+. import excel "`filepath'", sheet("WEEKLY WAGES") firstrow clear
+(24 vars, 17,947 obs)
+
+. 
+. // ------------------------ Step 3: Keep Necessary Variables ---------
+. keep Area Year Quarter AllIndustries
+
+. 
+. // ------------------------ Step 4: Drop Observations ----------------
+. di "Dropping observations where Year is less than 2017."
+Dropping observations where Year is less than 2017.
+
+. drop if Year < 2017
+(14,148 observations deleted)
+
+. drop in 1/319
+(319 observations deleted)
+
+. 
+. // ------------------------ Step 5: Expand Quarter to Months ---------
+. expand 3
+(6,960 observations created)
+
+. sort Area Year Quarter
+
+. gen Month = ""
+(10,440 missing values generated)
+
+. bysort Area Year (Quarter): replace Month = "01" if Quarter == 1 & mod(_n,3)==1
+(960 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "02" if Quarter == 1 & mod(_n,3)==2
+(960 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "03" if Quarter == 1 & mod(_n,3)==0
+(960 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "04" if Quarter == 2 & mod(_n,3)==1
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "05" if Quarter == 2 & mod(_n,3)==2
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "06" if Quarter == 2 & mod(_n,3)==0
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "07" if Quarter == 3 & mod(_n,3)==1
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "08" if Quarter == 3 & mod(_n,3)==2
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "09" if Quarter == 3 & mod(_n,3)==0
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "10" if Quarter == 4 & mod(_n,3)==1
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "11" if Quarter == 4 & mod(_n,3)==2
+(840 real changes made)
+
+. bysort Area Year (Quarter): replace Month = "12" if Quarter == 4 & mod(_n,3)==0
+(840 real changes made)
+
+. drop Quarter
+
+. 
+. // ------------------------ Step 6: Final Adjustments ----------------
+. order Area Year Month AllIndustries
+
+. rename AllIndustries Quart_Wkly_Wage
+
+. rename Area COUNTY
+
+. label variable Quart_Wkly_Wage "Quarterly Median Weekly Wage for All Industries"
+
+. destring Month, replace
+Month: all characters numeric; replaced as byte
+
+. destring Year, replace
+Year already numeric; no replace
+
+. replace COUNTY = proper(lower(COUNTY))
+(261 real changes made)
+
+. 
+. // ------------------------ Step 7: Save Final Dataset ----------------
+. save "`output_folder'/Cleaned_QCEW_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/QCEW_County_Data/Cleaned_QCEW_Data.dta saved
+
+. di "Final dataset successfully saved to `output_folder'."
+Final dataset successfully saved to C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/QCEW_County_Data.
+
+. 
+. // Close the log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/QCEW_County_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:21
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

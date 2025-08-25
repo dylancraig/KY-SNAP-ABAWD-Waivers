@@ -1,0 +1,292 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Data_Cleaning.log
+  log type:  text
+ opened on:  24 Aug 2025, 22:54:21
+
+. 
+. /***********************************************
+> FILE NAME: Data_Cleaning
+> AUTHOR: Dylan Craig
+> DATE CREATED: November 24, 2024
+> DATE MODIFIED: November 26, 2024
+> 
+> PURPOSE: Merge all .dta files from specified folders by COUNTY, Year, and Month.
+> ***********************************************/
+. 
+. // Echo header into log
+. di as txt "***********************************************"
+***********************************************
+
+. di as txt "FILE NAME: Data_Cleaning"
+FILE NAME: Data_Cleaning
+
+. di as txt "AUTHOR: Dylan Craig"
+AUTHOR: Dylan Craig
+
+. di as txt "DATE CREATED: November 24, 2024"
+DATE CREATED: November 24, 2024
+
+. di as txt "DATE MODIFIED: November 26, 2024"
+DATE MODIFIED: November 26, 2024
+
+. di as txt "PURPOSE: Merge all .dta files from specified folders by COUNTY, Year, and Month."
+PURPOSE: Merge all .dta files from specified folders by COUNTY, Year, and Month.
+
+. di as txt "***********************************************"
+***********************************************
+
+. 
+. // ------------------------ Step 1: Load Population Data --------------------------
+. // Start with ACS population dataset
+. use "$base_path/Data_Outputs/ACS_Population/ACS_Population_Cleaned.dta", clear
+
+. 
+. // Append Census Bureau County Population data
+. append using "$base_path/Data_Outputs/Census_Bureau_County_Population_Data/County_Population.dta"
+(variable COUNTY was str12, now str380 to accommodate using data's values)
+(variable Month was byte, now float to accommodate using data's values)
+
+. 
+. // ------------------------ Step 2: Sequential Merges -----------------------------
+. // ACS Education
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/ACS_Education/ACS_Education_Cleaned.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,440
+        from master                     1,440  
+        from using                          0  
+
+    Matched                             8,640  
+    -----------------------------------------
+
+. 
+. // ACS Poverty
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/ACS_Poverty/ACS_Poverty_Cleaned.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,440
+        from master                     1,440  
+        from using                          0  
+
+    Matched                             8,640  
+    -----------------------------------------
+
+. 
+. // ACS Race
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/ACS_Race/ACS_Race_Cleaned.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,500
+        from master                     1,440  
+        from using                         60  
+
+    Matched                             8,640  
+    -----------------------------------------
+
+. 
+. // County Health Rankings
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/County_Health_Rankings_Roadmaps_Data/Cleaned_FoodInsecurity_Data.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,500
+        from master                        60  
+        from using                      1,440  
+
+    Matched                            10,080  
+    -----------------------------------------
+
+. 
+. // Kentucky County ABAWD
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/Kentucky_County_ABAWD_Data/Cleaned_ABAWD_Data.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           896
+        from master                       660  
+        from using                        236  
+
+    Matched                            10,920  
+    -----------------------------------------
+
+. 
+. // Kentucky Waiver Status
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/Kentucky_Waiver_Status/Final_Waiver_Status.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           416
+        from master                       416  
+        from using                          0  
+
+    Matched                            11,400  
+    -----------------------------------------
+
+. 
+. // LAUS County Data
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/LAUS_County_Data/Cleaned_LAUS_Data.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                           656
+        from master                       656  
+        from using                          0  
+
+    Matched                            11,160  
+    -----------------------------------------
+
+. 
+. // QCEW County Data
+. merge 1:1 COUNTY Year Month using "$base_path/Data_Outputs/QCEW_County_Data/Cleaned_QCEW_Data.dta", keepusing(*) nogen
+
+    Result                      Number of obs
+    -----------------------------------------
+    Not matched                         1,376
+        from master                     1,376  
+        from using                          0  
+
+    Matched                            10,440  
+    -----------------------------------------
+
+. 
+. // ------------------------ Step 3: Variable Creation ------------------------------
+. // Make sure numeric fields are numeric (avoids type mismatch issues)
+. destring Ann_Below_Poverty Ann_NH_White Ann_NH_Black Ann_NH_AIAN Ann_NH_Asian ///
+>          Ann_NH_NHOPI Ann_NH_Other Ann_NH_TwoOrMore Ann_Hispanic_Latino, replace force
+Ann_Below_Poverty already numeric; no replace
+Ann_NH_White: contains nonnumeric characters; replaced as long
+(3176 missing values generated)
+Ann_NH_Black: contains nonnumeric characters; replaced as long
+(3176 missing values generated)
+Ann_NH_AIAN: contains nonnumeric characters; replaced as int
+(3176 missing values generated)
+Ann_NH_Asian: contains nonnumeric characters; replaced as int
+(3176 missing values generated)
+Ann_NH_NHOPI: contains nonnumeric characters; replaced as int
+(3176 missing values generated)
+Ann_NH_Other: contains nonnumeric characters; replaced as int
+(3176 missing values generated)
+Ann_NH_TwoOrMore: contains nonnumeric characters; replaced as int
+(3176 missing values generated)
+Ann_Hispanic_Latino: contains nonnumeric characters; replaced as long
+(3176 missing values generated)
+
+. 
+. // Poverty percentage
+. gen Ann_Perc_Below_Poverty = (Ann_Below_Poverty / Ann_Population) * 100
+(3,176 missing values generated)
+
+. label variable Ann_Perc_Below_Poverty "Annual Percentage of population below poverty level"
+
+. 
+. // Race/Ethnicity percentages
+. gen Ann_Perc_NH_White        = (Ann_NH_White     / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_Black        = (Ann_NH_Black     / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_AIAN         = (Ann_NH_AIAN      / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_Asian        = (Ann_NH_Asian     / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_NHOPI        = (Ann_NH_NHOPI     / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_Other        = (Ann_NH_Other     / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_NH_TwoOrMore    = (Ann_NH_TwoOrMore / Ann_Population) * 100
+(3,176 missing values generated)
+
+. gen Ann_Perc_Hispanic_Latino = (Ann_Hispanic_Latino / Ann_Population) * 100
+(3,176 missing values generated)
+
+. 
+. // Labels
+. label variable Ann_Perc_NH_White         "Annual % Non-Hispanic White"
+
+. label variable Ann_Perc_NH_Black         "Annual % Non-Hispanic Black"
+
+. label variable Ann_Perc_NH_AIAN          "Annual % Non-Hispanic AIAN"
+
+. label variable Ann_Perc_NH_Asian         "Annual % Non-Hispanic Asian"
+
+. label variable Ann_Perc_NH_NHOPI         "Annual % Non-Hispanic NHOPI"
+
+. label variable Ann_Perc_NH_Other         "Annual % Non-Hispanic Other"
+
+. label variable Ann_Perc_NH_TwoOrMore     "Annual % Non-Hispanic Two or More Races"
+
+. label variable Ann_Perc_Hispanic_Latino  "Annual % Hispanic or Latino"
+
+. 
+. // Replace invalid values with missing
+. foreach var in Ann_Perc_Below_Poverty Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_NH_AIAN ///
+>                   Ann_Perc_NH_Asian Ann_Perc_NH_NHOPI Ann_Perc_NH_Other ///
+>                   Ann_Perc_NH_TwoOrMore Ann_Perc_Hispanic_Latino {
+  2.     replace `var' = . if missing(Ann_Population) | Ann_Population == 0
+  3. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. 
+. // ------------------------ Step 4: Convert Percentages to Proportions --------------
+. local percent_vars Ann_Perc_HS_25_Over Ann_Perc_Bach_25_Over Ann_Perc_Below_Poverty ///
+>     Ann_Perc_NH_White Ann_Perc_NH_Black Ann_Perc_NH_AIAN Ann_Perc_NH_Asian Ann_Perc_NH_NHOPI ///
+>     Ann_Perc_NH_Other Ann_Perc_NH_TwoOrMore Ann_Perc_Hispanic_Latino Ann_FoodInsecurePerc ///
+>     Ann_RuralPopPerc Mnthly_Unemployment_Rate
+
+. 
+. foreach var of local percent_vars {
+  2.     replace `var' = `var' / 100
+  3. }
+(8,640 real changes made)
+(8,640 real changes made)
+(8,640 real changes made)
+(8,640 real changes made)
+(8,604 real changes made)
+(7,056 real changes made)
+(7,680 real changes made)
+(3,084 real changes made)
+(5,148 real changes made)
+(8,580 real changes made)
+(8,532 real changes made)
+(11,520 real changes made)
+(11,520 real changes made)
+(11,160 real changes made)
+
+. 
+. // ------------------------ Step 5: Final Adjustments -------------------------------
+. order COUNTY REGION Year Month WaiverStatus Ann_Population
+
+. sort COUNTY Year Month
+
+. 
+. save "$base_path/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta", replace
+file C:\KY-SNAP-ABAWD-Waivers/Data_Outputs/Final_Cleaned_Data/Final_Cleaned_Data.dta saved
+
+. di "All files successfully merged and saved."
+All files successfully merged and saved.
+
+. 
+. // Close log
+. log close
+      name:  <unnamed>
+       log:  C:\KY-SNAP-ABAWD-Waivers/Log_Files/Data_Cleaning.log
+  log type:  text
+ closed on:  24 Aug 2025, 22:54:21
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
