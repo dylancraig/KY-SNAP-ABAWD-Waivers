@@ -49,8 +49,3 @@ The workflow uses **Stata (.do)** and **R** scripts to create a harmonized datas
 - **USDA-FNS** – County waiver approval data  
 - **Kentucky CHFS** – ABAWD caseload reports  
 - **County Health Rankings** – food insecurity, rural population  
-
----
-
-## 📄 License
-This project is released under the [MIT License](LICENSE).
